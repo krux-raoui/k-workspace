@@ -1,0 +1,11 @@
+- name: "deploying..."
+  hosts: localhost
+  tasks:
+    - name: setup datas-root
+      include_tasks: ./tasks/deploy.datas-root.yaml
+
+    - name: install docker-machine
+      include_tasks: ./tasks/deploy.docker-machine.yaml
+
+    - name: checking docker-machine
+      include_tasks: ./tasks/deploy.docker-machine-check.yaml

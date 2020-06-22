@@ -1,0 +1,23 @@
+# get docker_host env variable
+# FIXME: rewrite in pure-ansible
+- shell: "sh ./scripts/extract-docker-env-var.sh {{ env_name }}"
+  register: docker_machine_env_exports
+  changed_when: no
+  environment:
+    HOME: "{{ datas_root }}"
+- name: setting variables in task context
+  set_fact:
+    key_value: "true" # warning disable in vscode ( not needed for real)
+    docker_machine_env: "{{ docker_machine_env_exports.stdout | from_json }}"
+
+# Ensure connection
+- shell: "docker context inspect default"
+  environment:
+    DOCKER_CERT_PATH: "{{ docker_machine_env.DOCKER_CERT_PATH }}"
+    DOCKER_HOST: "{{ docker_machine_env.DOCKER_HOST }}"
+    DOCKER_MACHINE_NAME: "{{ docker_machine_env.DOCKER_MACHINE_NAME }}"
+    DOCKER_TLS_VERIFY: "{{ docker_machine_env.DOCKER_TLS_VERIFY }}"
+  register: docker_context_inpect
+  failed_when:
+    - "not (docker_machine_env.DOCKER_HOST in  docker_context_inpect.stdout )"
+  changed_when: no

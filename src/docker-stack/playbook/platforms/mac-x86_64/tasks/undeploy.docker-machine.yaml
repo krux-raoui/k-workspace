@@ -1,0 +1,29 @@
+# check docker-machine presence
+- name: check if docker-machine exists
+  command:
+    argv:
+      - docker-machine
+      - ls
+      - --filter
+      - NAME={{ env_name }}
+      - -f
+      - "."
+  changed_when: no
+  register: docker_machine_exists
+  failed_when: no
+  environment:
+    HOME: "{{ datas_root }}"
+
+# remove docker-machine instance
+- name: remove docker-machine instance
+  command:
+    argv:
+      - docker-machine
+      - rm
+      - "{{ env_name }}"
+      - -y
+  when: 
+    - docker_machine_exists.stdout is defined
+    - "'.' in  docker_machine_exists.stdout"
+  environment:
+    HOME: "{{ datas_root }}"

@@ -1,0 +1,8 @@
+- name: "uninstalling..."
+  hosts: localhost
+  tasks:
+    - name: uninstall docker-machine requirements
+      include_tasks: ./tasks/undeploy.docker-machine-reqs.yaml
+
+
+ 

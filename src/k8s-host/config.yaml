@@ -1,0 +1,9 @@
+#global config
+env_name: "dev"
+datas_root: "/Users/krux/ws_dev_root"
+
+## k8s-host values
+k8s_host:
+  undeploy_reqs: true # don't undeploy base prerequirements for kind
+  docker_machine_isolation: true # true for docker-machine docker isolation, false is not supported yet
+  shared_folder: "{{ datas_root }}/shared"

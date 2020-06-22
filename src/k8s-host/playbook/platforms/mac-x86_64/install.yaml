@@ -1,0 +1,6 @@
+- name: "deploying..."
+  hosts: localhost
+  tasks:
+    - name: install kind requirements
+      include_tasks: ./tasks/install.kind-reqs.yaml
+ 
