@@ -1,0 +1,46 @@
+- name: create nginx ingress namespace
+  k8s:
+    state: present
+    context: "{{ k8s_cluster.k8s_context }}"
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: ingress-nginx
+        labels:
+          app.kubernetes.io/name: ingress-nginx
+          app.kubernetes.io/instance: ingress-nginx
+          ws.krux.io/backup-include: "true"
+  environment:
+    HOME: "{{ datas_host.root_path }}"
+- name: installing nginx ingress helm
+  command:
+    argv:
+      - helm
+      - upgrade
+      - --install
+      - --kube-context
+      - "{{ k8s_cluster.k8s_context }}"
+      - --wait
+      - --namespace
+      - ingress-nginx
+      - kw-ingress-nginx
+      - ../modules/kw-ingress/chart/
+  environment:
+    HOME: "{{ datas_host.root_path }}"
+
+- name: waiting for nginx ingress ready
+  command:
+    argv:
+      - kubectl
+      - wait
+      - --context
+      - "{{ k8s_cluster.k8s_context }}"
+      - --namespace
+      - ingress-nginx
+      - --for=condition=ready
+      - pod
+      - --selector=app.kubernetes.io/component=controller
+      - --timeout=90s
+  environment:
+    HOME: "{{ datas_host.root_path }}"

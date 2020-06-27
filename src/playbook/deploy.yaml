@@ -9,5 +9,5 @@
 - name: "dns-host layer"
   import_playbook: "../layers/dns-host/playbook/deploy.yaml"
 
-# - name: "k8s-cluster layer"
-#   import_playbook: "../layers/k8s-cluster/playbook/deploy.yaml"
+- name: "k8s-cluster layer"
+  import_playbook: "../layers/k8s-cluster/playbook/deploy.yaml"

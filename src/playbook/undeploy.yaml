@@ -1,7 +1,8 @@
 # undeploy process
 
-# - name: "k8s-cluster layer"
-#   import_playbook: "../layers/k8s-cluster/playbook/undeploy.yaml"
+- name: "k8s-cluster layer"
+  import_playbook: "../layers/k8s-cluster/playbook/undeploy.yaml"
+
 - name: "dns-host layer"
   import_playbook: "../layers/dns-host/playbook/undeploy.yaml"
 

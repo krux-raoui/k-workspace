@@ -15,7 +15,6 @@
 
 # create docker-machine instance
 - name: create docker-machine instance
-  debugger: on_failed
   command:
     argv:
       - docker-machine

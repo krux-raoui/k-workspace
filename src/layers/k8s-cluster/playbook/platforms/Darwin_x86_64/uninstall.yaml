@@ -1,0 +1,4 @@
+- name: "uninstalling helm3 cli via brew"
+  homebrew:
+    name: helm
+    state: absent

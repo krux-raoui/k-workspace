@@ -1,0 +1,2 @@
+- name: deploy kw-ingress module
+  include_tasks: "../modules/kw-ingress/deploy.yaml"

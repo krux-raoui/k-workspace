@@ -6,7 +6,7 @@ datas_host:
   root_path: "{{ user_home_path }}/kws_{{ env_name }}_datas"
 
 dns_host:
-  tld: exmaple.kws
+  tld: "{{ env_name }}.kws"
 
 k8s_host:
   shared_folder: "{{ user_home_path }}/kws_{{ env_name }}_datas/shared"
@@ -16,3 +16,6 @@ k8s_host:
   network_cidr: "192.168.99.1/24"
   #TODO: build my own boot2docker fork ( original source is deprecated and not working properly with 19.03.5 latest release )
   boot2docker_iso_url: "https://github.com/boot2docker/boot2docker/releases/download/v19.03.5/boot2docker.iso"
+
+k8s_cluster:
+  k8s_context: "kind-{{ env_name }}"

@@ -1,0 +1,47 @@
+- name: uninstall nginx ingress
+  command:
+    argv:
+      - helm
+      - uninstall
+      - --debug
+      - --kube-context
+      - "{{ k8s_cluster.k8s_context }}"
+      - kw-ingress-nginx
+  register: uninstall_helm_ingress
+  failed_when:
+    - "'release: not found' not in uninstall_helm_ingress.stderr"
+    - "'Kubernetes cluster unreachable:' not in uninstall_helm_ingress.stderr"
+    - "'uninstalled' not in uninstall_helm_ingress.stdout"
+
+- name: check for cluster
+  command:
+    argv:
+      - kind
+      - get
+      - clusters
+  register: clusters_list
+
+- name: delete nginx ingress namespace
+  k8s:
+    state: absent
+    context: "{{ k8s_cluster.k8s_context }}"
+    api_version: v1
+    kind: Namespace
+    name: ingress-nginx
+
+  when: "{{ env_name in clusters_list.stdout }}"
+
+- name: wait for namespace deletion completed
+  command:
+    argv:
+      - kubectl
+      - wait
+      - --context
+      - "{{ k8s_cluster.k8s_context }}"
+      - --for=delete
+      - namespace/ingress-nginx
+      - --timeout=90s
+  register: wait_delete
+  failed_when:
+    - "not 'not found' in wait_delete.stderr"
+    - "not 'condition met' in wait_delete.stdout"

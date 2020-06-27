@@ -1,0 +1,3 @@
+- name: "nothing to do"
+  debug:
+    msg: "nothing to do"
