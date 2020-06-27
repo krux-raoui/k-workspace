@@ -1,5 +1,0 @@
-- name: "undeploying..."
-  hosts: localhost
-  tasks:
-    - name: uninstall kind cli requirement
-      include_tasks: ./tasks/uninstall.kind-reqs.yaml

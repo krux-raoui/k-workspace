@@ -1,0 +1,3 @@
+#layer défault config
+datas_host:
+  root_path: "{{ lookup('env','HOME') }}/kws_{{ env_name }}_datas"

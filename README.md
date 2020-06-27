@@ -4,11 +4,11 @@ A warmy place to build future
 
 Author: Christophe Tiraoui since 2020
 
-Document status: `DRAFT-20.6.22`
+Document status: `DRAFT-20.6.27`
 
 ## Main Goal
 
-This project, is a tool, for building new "cloud-style" system, but, on your pocket on in the cloud.
+This project, is a tool, for building new "cloud-style" system, but, on your pocket or in the cloud.
 
 With it, you could :
 
@@ -16,8 +16,8 @@ With it, you could :
 - Move your "system" easily from a place to another.  
 - Store, "as a service" multiple projects ( depending your creativity )
 - Suspend / Resume or Shutdown projects that doen't need to stay up forever
-- Backup/Snapshot/Restore state of a project
 - Nuke easily draft project
+- Backup/Snapshot/Restore state of a project
 
 Ok, what's the cost ?
 
@@ -25,174 +25,151 @@ Ok, what's the cost ?
 - A browser capable to communicate to the machine
 - Dot.
 
-How:
+### How
 
 - Kubernetes is the master peace of this "stack-maker" and "stack-runner" for little or ambitious project
-- Community Contributions from open-sourced and mature "open-minded", serious, ready to use, tools , libs and apps (thanks to Helm packages and Docker imaging)
+- Community Contributions from open-sourced and mature "open-minded", serious, ready to use, tools, libs and apps (thanks to Helm packages and Docker imaging)
 - Some (not always directly related) personnal contribution to make my everyday life easier with this product
 - An elegant declarative and opensourced glue to make everything working ( with lowest prequisites as possible)
-  
-## Documentations ( in french only )
-
-### Architecture
-
-Approche: Pragmatique
-Design: Hamburger
-Ref: [20.6-Architecture (draw.io format)](./docs/20.6-architecture.drawio)
-<!-- 
-## Config
-
-Per-Stage config file in folder ./configs
-
-- `startup.yaml` is a ready-to-use local-run config, working as standalone ( mac os only supported for the moment )
-
-Customize it as needed ( customizable helm values depends in each charts, in each module, in each layer) are under `helm-values` node in config -->
 
 ## Installation
 
-### Targeting platform
-  
-- on a `macos X` ( wherever `docker-machine` is installable in reality), development started with Catalina 10.15
+### Supported host machine
+
+- `macos x`, tested on Catalina 10.15
 - `windows` (planed)
-- Raspberry PI (`raspbian`) (planed)
+- `raspbian` (arm debian linux tuned for RaspBerry PI) (planed)
 - `linux` (famous distribution/ansible package manager support) (comming soon)
 
-#### Checkout repo inside a clean folder
+### Guide
+
+#### Configure
+
+Customize configs/example.yaml be I recommand to duplicate with your own values ( keep example one if your are not sure)
+
+Set `USER_CONFIG` environnement variable with the path of your file for being used in the next commands
+
+For **demo** effect, skip this step.
+
+#### Setup
+
+Checkout this repositoy ( or your forked yours) inside a clean folder
 
 ````bash
+mkdir ~/kws-example
+
+cd ~/kws-example
+
 git clone https://github.com/krux-raoui/k-workspace.git
 ````
 
-#### Inside folder
+#### Install
 
 ````bash
-cd k-workspace/src
+
+cd ~/kws-example/k-workspace
+
+make install
+
 ````
 
-#### Launch
+##### Privileges and behaviours
+
+- you will be prompted for "sudo" (aka BECOME) privilege escalation for some specific host-wide configuration (dnsmasq, ...)
+
+- in some cases, you may need to perform command twice (on a first-time install or after a full uninstall). Command output will indicate when it's needed.
+  
+#### Deploy
 
 ````bash
-make up_mac
+
+cd ~/kws-example/k-workspace
+
+make install
+
 ````
 
-or
+##### Privilege needs
+
+- you will be prompted for "sudo" (aka BECOME) privilege escalation for some specific host-wide configuration (dnsmasq service restart, ...)
+
+#### Up
+
+This command perform install AND deploy operations.
+
+If you already run the previous command, no problem, everithing will be leave in place ( or adjusted if needed)
 
 ````bash
-make install_mac
-make deploy_mac
+
+cd ~/kws-example/k-workspace
+
+make up
+
 ````
 
 Measures:
 
-- about 5 minutes for setup "k8s-host" stage stack with 5GB used on my dev environnement
+- It take about 5 minutes for install and deploy "workspace" based on example config
+- 5GB disk used after install and deploy
 
-#### Reset / Nuke a workspace
+#### Usage
 
-##### BE CAREFULL
+Open a webbrowser on the local machine, an go to <http://example.kws>
 
-This command remove ALL your "unshared" datas
+Enjoy
 
-This is not a problem, by design, but it can create damage in those cases:
+#### Undeploy
 
-- if your reuse some components for other usage (docker deamon, kubernetes cluster...)
-- if you made some "custom cooking" with your tools
-- some other cases where datas are not stored in the `shared` workspace datas folder
-
-##### Commands
+**BE CAREFULL** this command remove all 'unshared' datas (#NEED_INFO)
 
 ````bash
-make down_mac
-````
 
-or
+cd ~/kws-example/k-workspace
 
-````bash
-make undeploy_mac
+make undeploy
+
 ````
 
 #### Uninstall
 
-## BE CAREFULL: this command remove core tools that could have an impact on your environment*
+**BE CAREFULL** this command remove core tools that could have an impact on your environment
 
-```bash
-make undeploy
-```
+````bash
 
-shared files inside in your workspace data folder, by default:
+cd ~/kws-example/k-workspace
 
-`~/ws_dev_root`
+make uninstall
 
-## Usage
+````
 
-Open a webbrowser, an go to <http://localhost> ( WIP )
+## Documentation
 
-Authenticate with credentials defined in your config ( WIP )
-(don't forget to change it as soon as possible, often when setup and backup are set up as you like)
+### More docs
 
-Enjoy
+- [Advanced usage and datas considerrations](./docs/ADVANCED.md)
 
-## Datas
+### Architecture
 
-By default, local datas are stored inside
+- Approch: Pragmatic
+- Design: Hamburger
+- Ref: [20.6-Architecture (draw.io format)](./docs/20.6-architecture.drawio) *( in french only )*
 
-`~/ws_startup` ( override it inside config file )
+## Licensing
 
-This folder is only needed while:
+This project is a generic receipe of a lot of tools.
 
-- `make deploy` has been done (of course)
-- `docker` is up and running.
+Each tools may have specific licence terms ( and you have to accept each of them).
 
-## Data Protection
+This projet is the 'glue' to make all this tools working together.
 
-Datas is precious, or not, depending your case. If not, this paragraph is not relevant, but good to know.
-
-The last point is important when private files are VERY important.
-
-If docker is stopped, there is no need to keep datas on "local machine".
-
-If datas are from remote volume mount, portable storages, legacy / new / secured / test / exotic files based storage, ... too.
-
-One of the goals of this project is the capability to "pop" envirnonnement only based on 2 elements :
-
-- "stage" YAML config file
-- "external" persistent datas ( physicaly on the host where `make deploy` has been run)
-- Dot.
-
-You have be vigilent on thoses datas, ephemeral volume and "external" volumes doesn't offer same performances.
-
-Prefere "cold" objects storage ( like S3 ) for storing "precious datas" only, running datas cas be keept on ephemeral volumes ( emptyDir ) for better performance.
-
-If you contributing on this project, and plan to store datas (statefull apps), you HAVE TO take care of this point.
-
-But,
-
-This is not magic, (at this time), and if it's misconfigured, some datas can persists on ephemeral storage whenever docker is stopped.
-
-The only way to guarantee that no personnal 'cached' datas remains consists in two approch ( depending your use case or your philosophy )
-
-- `undeploy` "sensitive" modules only on each layer (of course , dependent module can be affected)
-- `undeploy` "sensitive" layer. (low-level layers try to implement data protection strategy described earlier, but it's not guarantee)
-- `undeploy` all. ( nothing resist, just your "external" pesistent folder )
-
-## Mutiple workspace on same machine
-
-This is possible, technicaly.
-
-Nice cooking config files is needed, but that's all. (WIP)
-
-## Scalability
-
-It's a nice to have capability but not the purpose of this project.
-Build on kubernetes-compliance, any "well-architectured app" can horizontaly scale
-Based on docker, this project can horizontaly scale (theoricaly) ( WIP / Missing Ref )
+This receipe is open-source under licence decribe inside the reposity. Each tools have it's own licence, can be more/less restrictive. Ensure yourself and your usage and distribution condition don't break any **legal** rule.
 
 ## Disclamer
 
 This project is provided as-this.
-Your datas is your on your own responsability.
-Security, Datas and network exposition too.
+Your datas is yours and on your own responsability. Security, Datas and network exposition too.
 External code not maintened in this reposity are under your trust.
 
-Software contains bugs, that's life, less as possible, sure, but be bienveillant please :)
+Software contains bugs, that's life, less as possible, sure, but be **tolerant** please :), and report issue to the concerned project if possible.
 
 Be carefull.

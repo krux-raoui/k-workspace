@@ -1,7 +1,0 @@
-- name: "installing..."
-  hosts: localhost
-  tasks:
-    - name: install docker-machine requirements
-      include_tasks: ./tasks/deploy.docker-machine-reqs.yaml
-
- 

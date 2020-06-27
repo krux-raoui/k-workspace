@@ -1,0 +1,13 @@
+# uninstall process
+
+# - name: "k8s-cluster layer"
+#   import_playbook: "../layers/k8s-cluster/playbook/uninstall.yaml"
+
+- name: "dns-host layer"
+  import_playbook: "../layers/dns-host/playbook/uninstall.yaml"
+
+- name: "k8s-host layer"
+  import_playbook: "../layers/k8s-host/playbook/uninstall.yaml"
+
+- name: "datas-host layer"
+  import_playbook: "../layers/datas-host/playbook/uninstall.yaml"

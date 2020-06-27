@@ -1,6 +1,0 @@
-- name: uninstalling kind cli via homebrew
-  homebrew:
-    name: kind
-    state: absent
-  when: k8s_host.undeploy_reqs
- 

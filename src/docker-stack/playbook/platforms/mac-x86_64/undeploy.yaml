@@ -1,6 +1,0 @@
-- name: "undeploying..."
-  hosts: localhost
-  tasks:
-    - name: uninstall docker-machine
-      include_tasks: ./tasks/undeploy.docker-machine.yaml
-

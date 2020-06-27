@@ -1,17 +1,22 @@
-
-
-setup-macos:
-	@make --directory ./src/0.prereqs/ deploy_macos
-
-unsetup-macos:
-	@make --directory ./src/0.prereqs/ undeploy_macos
-
-deploy: 	
-	@make --directory ./src/1.cluster/ deploy	
+USER_CONFIG?=./configs/example.yaml
+VERBOSITY?="-v"
+# VERBOSITY="-vvv" # Debug mode
  
-undeploy: 
-	@make --directory ./src/1.cluster/ undeploy
+install: 
+	@ansible-playbook ./src/playbook/install.yaml $(VERBOSITY)  --extra-vars "@${USER_CONFIG}" --ask-become-pass
+
+deploy:	
+	@ansible-playbook ./src/playbook/deploy.yaml $(VERBOSITY) --extra-vars "@${USER_CONFIG}" --ask-become-pass
+
+undeploy:
+	@ansible-playbook ./src/playbook/undeploy.yaml $(VERBOSITY) --extra-vars "@${USER_CONFIG}" --ask-become-pass
 	
-	
-	
-	
+uninstall: 
+	@ansible-playbook ./src/playbook/uninstall.yaml $(VERBOSITY) --extra-vars "@${USER_CONFIG}" --ask-become-pass
+
+# Meta-commands
+up:
+	@ansible-playbook ./src/playbook/up.yaml $(VERBOSITY)  --extra-vars "@${USER_CONFIG}" --ask-become-pass
+
+down: 
+	@ansible-playbook ./src/playbook/down.yaml $(VERBOSITY)  --extra-vars "@${USER_CONFIG}" --ask-become-pass

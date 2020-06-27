@@ -1,5 +1,0 @@
-# install kind cli
-- name: install kind cli via homebrew
-  homebrew:
-    name: kind
-    state: present
