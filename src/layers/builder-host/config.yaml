@@ -1,0 +1,3 @@
+#Specific layer défault config
+dns_host:
+  tld: "{{ env_name }}.kws"

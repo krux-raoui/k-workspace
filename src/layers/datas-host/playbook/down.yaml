@@ -1,0 +1,5 @@
+- name: "undeploy all"
+  import_playbook: "./undeploy.yaml"
+
+- name: "uninstall all"
+  import_playbook: "./uninstall.yaml"

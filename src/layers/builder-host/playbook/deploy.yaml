@@ -1,0 +1,8 @@
+- hosts: localhost
+  tasks: 
+    # General
+    - name: deploy kw-builder-git module
+      include_tasks: "../modules/kw-builder-git/playbook/deploy.yaml"
+
+    - name: deploy kw-builder-ide module
+      include_tasks: "../modules/kw-builder-ide/playbook/deploy.yaml"

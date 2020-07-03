@@ -1,6 +1,11 @@
 - name: "undeploy layer"
   hosts: localhost
   tasks:
+    # Common
+    - name: undeploy kw-ingress module
+      include_tasks: "../modules/kw-ingress/playbook/undeploy.yaml"
+
+    #Platform specific
     - name: check for platform support
       stat:
         path: "./platforms/{{ ansible_facts['os_family'] }}_{{ ansible_facts['architecture']}}/undeploy.yaml"

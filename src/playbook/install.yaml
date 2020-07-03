@@ -11,3 +11,7 @@
 
 - name: "k8s-cluster layer"
   import_playbook: "../layers/k8s-cluster/playbook/install.yaml"
+
+- name: "builder-host layer"
+  import_playbook: "../layers/builder-host/playbook/install.yaml"
+

@@ -33,11 +33,14 @@
     block: |
       address=/.{{ dns_host.tld }}/{{ docker_machine_env.DOCKER_HOST_IP }}
     marker: "# {mark} {{ env_name }} ANSIBLE MANAGED BLOCK"
+  register: dnsmasq_config_changed
 
 - name: restart dnsmasq
   become: yes
   shell: "brew services restart dnsmasq"
+  when: dnsmasq_config_changed.changed
 
 - name: reset dns cache
   become: yes
   shell: "killall -HUP mDNSResponder"
+  when: dnsmasq_config_changed.changed

@@ -1,5 +1,8 @@
 # uninstall process
 
+- name: "builder-host layer"
+  import_playbook: "../layers/builder-host/playbook/uninstall.yaml"
+
 - name: "k8s-cluster layer"
   import_playbook: "../layers/k8s-cluster/playbook/uninstall.yaml"
 
