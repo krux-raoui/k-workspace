@@ -1,16 +1,25 @@
-# undeploy process
+- name: "{{ phase }} process"
+  hosts: localhost
+  vars:
+    phase: undeploy
+  roles:
+    - role: kws_phase_layer
+      layer: "builder-host"
 
-- name: "builder-host layer"
-  import_playbook: "../layers/builder-host/playbook/undeploy.yaml"
+    - role: kws_phase_layer
+      layer: "k8s-cluster"
 
-- name: "k8s-cluster layer"
-  import_playbook: "../layers/k8s-cluster/playbook/undeploy.yaml"
+    - role: kws_phase_layer
+      layer: "dns-host"
 
-- name: "dns-host layer"
-  import_playbook: "../layers/dns-host/playbook/undeploy.yaml"
+    - role: kws_phase_layer
+      layer: "k8s-host"
 
-- name: "k8s-host layer"
-  import_playbook: "../layers/k8s-host/playbook/undeploy.yaml"
+    - role: kws_phase_layer
+      layer: "registry-host"
 
-- name: "datas-host layer"
-  import_playbook: "../layers/datas-host/playbook/undeploy.yaml"
+    - role: kws_phase_layer
+      layer: "docker-host"
+
+    - role: kws_phase_layer
+      layer: "datas-host"

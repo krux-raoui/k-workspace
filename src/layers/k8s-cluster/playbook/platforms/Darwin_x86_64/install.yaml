@@ -1,9 +1,0 @@
-# install docker-cli
-- name: "installing helm 3 cli via brew"
-  homebrew:
-    name: helm
-    state: present
-- name: "link helm3 cli via brew"
-  homebrew:
-    name: helm
-    state: linked

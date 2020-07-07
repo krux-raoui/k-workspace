@@ -1,16 +1,25 @@
-# deploy process
+- name: "{{ phase }} process"
+  hosts: localhost
+  vars:
+    phase: deploy
+  roles:
+    - role: kws_phase_layer
+      layer: "datas-host"
 
-- name: "datas-host layer"
-  import_playbook: "../layers/datas-host/playbook/deploy.yaml"
+    - role: kws_phase_layer
+      layer: "docker-host"
 
-- name: "k8s-host layer"
-  import_playbook: "../layers/k8s-host/playbook/deploy.yaml"
+    - role: kws_phase_layer
+      layer: "registry-host"
 
-- name: "dns-host layer"
-  import_playbook: "../layers/dns-host/playbook/deploy.yaml"
+    - role: kws_phase_layer
+      layer: "k8s-host"
 
-- name: "k8s-cluster layer"
-  import_playbook: "../layers/k8s-cluster/playbook/deploy.yaml"
+    - role: kws_phase_layer
+      layer: "dns-host"
 
-- name: "builder-host layer"
-  import_playbook: "../layers/builder-host/playbook/deploy.yaml"
+    - role: kws_phase_layer
+      layer: "k8s-cluster"
+
+    - role: kws_phase_layer
+      layer: "builder-host"

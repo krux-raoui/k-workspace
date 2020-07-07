@@ -1,16 +1,14 @@
-- name: installing
-  hosts: localhost
-  tasks:
-    - name: create root datas folder
-      file:
-        path: "{{ datas_host.root_path }}"
-        state: "directory"
-        recurse: yes
-        access_time: now
-
-    - name: check if docker-machine folder exists
-      file:
-        path: "{{ datas_host.root_path }}/.docker"
-        state: directory
-        access_time: now
-      changed_when: no
+- name: create root datas folder
+  file:
+    path: "{{ datas_host.root_path }}"
+    state: "directory"
+    recurse: yes
+    access_time: now
+  changed_when: no
+  
+- name: check if docker-machine folder exists
+  file:
+    path: "{{ datas_host.root_path }}/.docker"
+    state: directory
+    access_time: now
+  changed_when: no

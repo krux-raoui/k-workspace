@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kw-builder-ide-vscode.fullname" . }}
+  labels:
+    {{- include "kw-builder-ide-vscode.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "kw-builder-ide-vscode.selectorLabels" . | nindent 4 }}

@@ -1,20 +1,7 @@
-- name: "deploying layer"
-  hosts: localhost
-  tasks:
-    #Platform Specific
-    - name: check for platform support
-      stat:
-        path: "./platforms/{{ ansible_facts['os_family'] }}_{{ ansible_facts['architecture']}}/deploy.yaml"
-      register: file_exists
 
-    - name: error if platform tasks doesn't exists
-      fail:
-        msg: "the platform {{ ansible_facts['os_family'] }} on {{ ansible_facts['architecture']}} isn't supported (yet)"
-      when: "not file_exists.stat.exists"
-
-    - name: install layer for {{ ansible_facts['os_family'] }} on {{ ansible_facts['architecture']}} platform
-      include_tasks: "./platforms/{{ ansible_facts['os_family'] }}_{{ ansible_facts['architecture']}}/deploy.yaml"
-    # General
-    - name: deploy kw-ingress module
-      include_tasks: "../modules/kw-ingress/playbook/deploy.yaml"
-
+- name: "deploy {{ module_name }} module"
+  include_role:
+    name: kws_phase_module
+  vars:
+    module_name: kw-ingress
+    module_path: "../layers/k8s-cluster/modules/kw-ingress/"

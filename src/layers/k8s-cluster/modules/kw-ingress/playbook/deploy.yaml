@@ -1,33 +1,15 @@
-- name: create nginx ingress namespace
-  k8s:
-    state: present
-    context: "{{ k8s_cluster.k8s_context }}"
-    definition:
-      apiVersion: v1
-      kind: Namespace
-      metadata:
-        name: ingress-nginx
-        labels:
-          app.kubernetes.io/name: ingress-nginx
-          app.kubernetes.io/instance: ingress-nginx
-          ws.krux.io/backup-include: "true"
-  environment:
-    HOME: "{{ datas_host.root_path }}"
-- name: installing nginx ingress helm
-  command:
-    argv:
-      - helm
-      - upgrade
-      - --install
-      - --kube-context
-      - "{{ k8s_cluster.k8s_context }}"
-      - --wait
-      - --namespace
-      - ingress-nginx
-      - kw-ingress-nginx
-      - ../modules/kw-ingress/chart/
-  environment:
-    HOME: "{{ datas_host.root_path }}"
+- name: "deploy {{ module_name }} module"
+  include_role:
+    name: kws_deploy_module
+  vars:
+    home_path: "{{ datas_host.root_path }}"
+    docker_machine_name: "{{ k8s_host.docker_machine_name }}"
+    k8s_context: "{{ k8s_cluster.k8s_context }}"
+    namespace: ingress-nginx
+    module_name: kw-ingress-nginx
+    chart_path: "{{ module_path }}/chart/"
+    helm_values: 
+      dummy: false
 
 - name: waiting for nginx ingress ready
   command:

@@ -1,73 +1,9 @@
-# get docker_host env variable
-# FIXME: rewrite in pure-ansible
-- name: extracting docker-machine env vars
-  shell: "sh ../scripts/extract-docker-machine-vars.sh {{ env_name }}"
-  register: docker_machine_env_exports
-  changed_when: no
-  environment:
-    HOME: "{{ datas_host.root_path }}"
-- name: setting variables in task context
-  set_fact:
-    key_value: "true" # warning disable in vscode ( not needed for real)
-    docker_machine_env: "{{ docker_machine_env_exports.stdout | from_json }}"
-
-- name: check for cluster
-  command:
-    argv:
-      - kind
-      - get
-      - clusters
-  register: clusters_list
-  environment:
-    HOME: "{{ datas_host.root_path }}"
-    DOCKER_CERT_PATH: "{{ docker_machine_env.DOCKER_CERT_PATH }}"
-    DOCKER_HOST: "{{ docker_machine_env.DOCKER_HOST }}"
-    DOCKER_MACHINE_NAME: "{{ docker_machine_env.DOCKER_MACHINE_NAME }}"
-    DOCKER_TLS_VERIFY: "{{ docker_machine_env.DOCKER_TLS_VERIFY }}"
-
-- name: uninstall kw-builder-git helm
-  command:
-    argv:
-      - helm
-      - uninstall
-      - --kube-context
-      - "{{ k8s_cluster.k8s_context }}"
-      - --namespace
-      - kw-builder-git
-      - kw-builder-git-gogs
-  register: uninstall_helm_ingress
-  when: "env_name in clusters_list.stdout"
-  failed_when:
-    - "'release: not found' not in uninstall_helm_ingress.stderr"
-    - "'Kubernetes cluster unreachable:' not in uninstall_helm_ingress.stderr"
-    - "'uninstalled' not in uninstall_helm_ingress.stdout"
-  environment:
-    HOME: "{{ datas_host.root_path }}"
-
-- name: delete kw-builder-git namespace
-  k8s:
-    state: absent
-    context: "{{ k8s_cluster.k8s_context }}"
-    api_version: v1
-    kind: Namespace
-    name: kw-builder-git
-  when: "env_name in clusters_list.stdout"
-  environment:
-    HOME: "{{ datas_host.root_path }}"
-- name: wait for namespace kw-builder-git deletion completed
-  command:
-    argv:
-      - kubectl
-      - wait
-      - --context
-      - "{{ k8s_cluster.k8s_context }}"
-      - --for=delete
-      - namespace/kw-builder-git
-      - --timeout=90s
-  register: wait_delete
-  when: "env_name in clusters_list.stdout"
-  failed_when:
-    - "not 'not found' in wait_delete.stderr"
-    - "not 'condition met' in wait_delete.stdout"
-  environment:
-    HOME: "{{ datas_host.root_path }}"
+- name: "undeploy {{ module_name }} module"
+  include_role:
+    name: kws_undeploy_module
+  vars:
+    home_path: "{{ datas_host.root_path }}"
+    docker_machine_name: "{{ k8s_host.docker_machine_name }}"
+    k8s_context: "{{ k8s_cluster.k8s_context }}"
+    namespace: kw-builder-git
+    module_name: kw-builder-git-gogs

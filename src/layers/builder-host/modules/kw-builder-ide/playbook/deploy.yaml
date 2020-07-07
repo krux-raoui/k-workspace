@@ -1,2 +1,54 @@
-- debug:
-    msg: "nothing to do"
+- name: building kw-builder-host-ide
+  include_role:
+    name: kws_docker_command
+  vars:
+    home_path: "{{ datas_host.root_path }}"
+    docker_machine_name: "{{ registry_host.docker_machine_name }}"
+    command: "docker build -t kw-builder-ide-vscode ."
+    cwd: "{{ module_path }}/image/"
+
+- name: tag kw-builder-host-ide
+  include_role:
+    name: kws_docker_command
+  vars:
+    home_path: "{{ datas_host.root_path }}"
+    docker_machine_name: "{{ registry_host.docker_machine_name }}"
+    command: "docker tag kw-builder-ide-vscode:latest localhost:5000/kw-builder-ide-vscode"
+    cwd: "{{ module_path }}"
+
+- name: push kw-builder-host-ide
+  include_role:
+    name: kws_docker_command
+  vars:
+    home_path: "{{ datas_host.root_path }}"
+    docker_machine_name: "{{ registry_host.docker_machine_name }}"
+    command: "docker push localhost:5000/kw-builder-ide-vscode"
+    cwd: "{{ module_path }}"
+
+- name: extracting docker-machine env vars for registry
+  shell: "sh ./roles/common/files/extract-docker-machine-vars.sh {{ registry_host.docker_machine_name }}"
+  register: docker_machine_env_exports_registry
+  changed_when: no
+  environment:
+    HOME: "{{ datas_host.root_path }}"
+
+- name: setting variables in task context
+  set_fact:
+    key_value: "true" # warning disable in vscode ( not needed for real)
+    docker_machine_env_registry: "{{ docker_machine_env_exports_registry.stdout | from_json }}"
+
+- name: set local registry uri
+  set_fact:
+    docker_local_registry: "{{ docker_machine_env_registry.DOCKER_HOST_IP }}:5000"
+
+- name: "deploy {{ module_name }} module"
+  include_role:
+    name: kws_deploy_module
+  vars:
+    home_path: "{{ datas_host.root_path }}"
+    docker_machine_name: "{{ k8s_host.docker_machine_name }}"
+    k8s_context: "{{ k8s_cluster.k8s_context }}"
+    namespace: kw-builder-ide
+    module_name: kw-builder-ide-vscode
+    chart_path: "{{ module_path }}/chart/"
+    helm_values: "{{ builder_host['kw-builder-ide'].helm_values | combine( { 'local_registry': docker_local_registry  } ) }}"

@@ -1,15 +1,4 @@
-- name: "installing layer"
-  hosts: localhost
-  tasks:
-    - name: check for platform support
-      stat:
-        path: "./platforms/{{ ansible_facts['os_family'] }}_{{ ansible_facts['architecture']}}/install.yaml"
-      register: file_exists
-
-    - name: error if platform tasks doesn't exists
-      fail:
-        msg: "the platform {{ ansible_facts['os_family'] }} on {{ ansible_facts['architecture']}} isn't supported (yet)"
-      when: "not file_exists.stat.exists"
-
-    - name: install layer for {{ ansible_facts['os_family'] }} on {{ ansible_facts['architecture']}} platform
-      include_tasks: "./platforms/{{ ansible_facts['os_family'] }}_{{ ansible_facts['architecture']}}/install.yaml"
+- name: "{{ phase }} platform layer for {{ layer }}"
+  include_role:
+    name: kws_phase_platform_layer
+ 

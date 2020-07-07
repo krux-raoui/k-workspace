@@ -1,0 +1,76 @@
+- name: extracting docker-machine env vars
+  shell: "sh ./roles/common/files/extract-docker-machine-vars.sh {{ docker_machine_name }}"
+  register: docker_machine_env_exports
+  changed_when: no
+  environment:
+    HOME: "{{ home_path }}"
+
+- name: setting variables in task context
+  set_fact:
+    key_value: "true" # warning disable in vscode ( not needed for real)
+    docker_machine_env: "{{ docker_machine_env_exports.stdout | from_json }}"
+
+- name: check if container {{ container.name }} exists
+  command:
+    argv:
+      - docker
+      - container
+      - ls
+      - -a
+      - -f
+      - Name={{ container.name }}
+  register: container_exists
+  changed_when: no
+  environment:
+    HOME: "{{ home_path }}"
+    DOCKER_CERT_PATH: "{{ docker_machine_env.DOCKER_CERT_PATH }}"
+    DOCKER_HOST: "{{ docker_machine_env.DOCKER_HOST }}"
+    DOCKER_MACHINE_NAME: "{{ docker_machine_env.DOCKER_MACHINE_NAME }}"
+    DOCKER_TLS_VERIFY: "{{ docker_machine_env.DOCKER_TLS_VERIFY }}"
+
+- name: create {{ container.name }} container
+  shell: |
+    docker container create  \
+    {{ container.ports }} \
+    {{ container.volumes }} \
+    {{ container.env }} \
+    --restart always \
+    --name {{ container.name }} \
+    {{ container.image }}
+  environment:
+    HOME: "{{ home_path }}"
+    DOCKER_CERT_PATH: "{{ docker_machine_env.DOCKER_CERT_PATH }}"
+    DOCKER_HOST: "{{ docker_machine_env.DOCKER_HOST }}"
+    DOCKER_MACHINE_NAME: "{{ docker_machine_env.DOCKER_MACHINE_NAME }}"
+    DOCKER_TLS_VERIFY: "{{ docker_machine_env.DOCKER_TLS_VERIFY }}"
+  when: "container.name not in container_exists.stdout"
+- name: check if registry container running
+  command:
+    argv:
+      - docker
+      - container
+      - ls
+      - -f
+      - Name={{ container.name }}
+  register: container_started
+  changed_when: no
+  environment:
+    HOME: "{{ home_path }}"
+    DOCKER_CERT_PATH: "{{ docker_machine_env.DOCKER_CERT_PATH }}"
+    DOCKER_HOST: "{{ docker_machine_env.DOCKER_HOST }}"
+    DOCKER_MACHINE_NAME: "{{ docker_machine_env.DOCKER_MACHINE_NAME }}"
+    DOCKER_TLS_VERIFY: "{{ docker_machine_env.DOCKER_TLS_VERIFY }}"
+- name: start {{ container.name }} container
+  command:
+    argv:
+      - docker
+      - container
+      - start
+      - "{{ container.name }}"
+  environment:
+    HOME: "{{ home_path }}"
+    DOCKER_CERT_PATH: "{{ docker_machine_env.DOCKER_CERT_PATH }}"
+    DOCKER_HOST: "{{ docker_machine_env.DOCKER_HOST }}"
+    DOCKER_MACHINE_NAME: "{{ docker_machine_env.DOCKER_MACHINE_NAME }}"
+    DOCKER_TLS_VERIFY: "{{ docker_machine_env.DOCKER_TLS_VERIFY }}"
+  when: "container.name not in container_started.stdout"

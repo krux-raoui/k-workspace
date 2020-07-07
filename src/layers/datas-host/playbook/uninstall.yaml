@@ -1,12 +1,4 @@
-- name: uninstalling
-  hosts: localhost
-  vars_prompt:
-    - name: "remove_datas_root"
-      prompt: "Are you sure to delete all your data root folder ({{ datas_host.root_path }}) (yes/no)?"
-      private: no
-  tasks:
-    - name: remove root datas folder
-      file:
-        path: "{{ datas_host.root_path }}"
-        state: "absent"
-      when: "remove_datas_root | bool"
+- name: remove root datas folder
+  file:
+    path: "{{ datas_host.root_path }}"
+    state: "absent"

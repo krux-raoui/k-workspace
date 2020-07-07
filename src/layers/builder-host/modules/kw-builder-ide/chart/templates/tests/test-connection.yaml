@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "kw-builder-ide-vscode.fullname" . }}-test-connection"
+  labels:
+    {{- include "kw-builder-ide-vscode.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "kw-builder-ide-vscode.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never

@@ -1,4 +1,4 @@
-- hosts: localhost
-  tasks: 
-    - debug: 
-        msg: "nothing to do"
+- name: "{{ phase }} platform layer for {{ layer }}"
+  include_role:
+    name: kws_phase_platform_layer
+ 

@@ -1,3 +1,5 @@
 #Specific layer défault config
 dns_host:
+  docker_machine_name_registry: "{{ env_name }}-registry"
+  docker_machine_name_k8s: "{{ env_name }}-k8s"
   tld: "{{ env_name }}.kws"

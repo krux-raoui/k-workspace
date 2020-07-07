@@ -6,5 +6,5 @@ k8s_host:
   disk_size: 20000
   network_cidr: "192.168.99.1/24"
   #TODO: build my own boot2docker fork ( original source is deprecated and not working properly with 19.03 release )
-  boot2docker_iso_url: "https://github.com/boot2docker/boot2docker/releases/download/v19.03.5/boot2docker.iso"
-  #Local FIX /Users/krux/repos/opensource/boot2docker/kw-boot2docker.iso
+  #boot2docker_iso_url: "https://github.com/boot2docker/boot2docker/releases/download/v19.03.5/boot2docker.iso"
+  boot2docker_iso_url: /Users/krux/repos/opensource/boot2docker/kw-boot2docker.iso

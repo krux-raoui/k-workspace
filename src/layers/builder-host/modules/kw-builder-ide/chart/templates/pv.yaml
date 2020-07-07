@@ -1,0 +1,32 @@
+{{- if and .Values.persistence.enabled (not .Values.persistence.existingClaim)}}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ template "kw-builder-ide-vscode.fullname" . }}
+  labels:
+    app: {{ template "kw-builder-ide-vscode.name" . }}
+    chart: {{ template "kw-builder-ide-vscode.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    type: "local"
+  # annotations:
+  #   pv.beta.kubernetes.io/gid: "1234"
+spec:
+  accessModes:
+    - {{ .Values.persistence.accessMode | quote }}
+  capacity:
+    storage: {{ .Values.persistence.size | quote }}
+      
+{{- if .Values.persistence.storageClass }}
+{{- if (eq "-" .Values.persistence.storageClass) }}
+  storageClassName: ""
+{{- else }}
+  storageClassName: "{{ .Values.persistence.storageClass }}"
+{{- end }}
+{{- end }}
+{{- if .Values.persistence.hostPath }}
+  hostPath:
+    path: {{ .Values.persistence.hostPath }}
+{{- end }}
+{{- end }}
+

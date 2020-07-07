@@ -15,8 +15,8 @@ k8s_host:
   disk_size: 20000
   network_cidr: "192.168.99.1/24"
   #TODO: build my own boot2docker fork ( original source is deprecated and not working properly with 19.03.5 latest release )
-  boot2docker_iso_url: "https://github.com/boot2docker/boot2docker/releases/download/v19.03.5/boot2docker.iso"
-
+  #boot2docker_iso_url: "https://github.com/boot2docker/boot2docker/releases/download/v19.03.5/boot2docker.iso"
+  boot2docker_iso_url: /Users/krux/repos/opensource/boot2docker/kw-boot2docker.iso
 k8s_cluster:
   k8s_context: "kind-{{ env_name }}"
 
@@ -30,7 +30,7 @@ builder_host:
         repository: gogs/gogs
         pullPolicy: IfNotPresent
         tag: "latest"
-     
+
       ingress:
         enabled: true
         annotations: {}
@@ -45,7 +45,7 @@ builder_host:
         accessMode: ReadWriteOnce
         size: 10Gi
         hostPath: "/kws_datas/kw-builder-git"
-    gogs_values: 
+    gogs_values:
       db_type: SQLite3
       db_host:
       db_user:
@@ -70,3 +70,49 @@ builder_host:
       admin_passwd: changeme
       admin_confirm_passwd: changeme
       admin_email: gogs@example.kws
+  kw-builder-ide:
+    helm_values:
+      replicaCount: 1
+      image:        
+        name: kw-builder-ide-vscode
+        pullPolicy: IfNotPresent
+        tag: "latest"
+      container:
+        containerPort: 8443
+        env:
+          - name: PROXY_DOMAIN
+            value: ide.example.kws
+          - name: PASSWORD
+            value: changeme
+          - name: SUDO_PASSWORD
+            value: changeme
+          - name: TZ
+            value: Europe/Paris
+          - name: PUID
+            value: 1000
+          - name: PGID
+            value: 1000
+      ingress:
+        enabled: true
+        annotations:
+          {}
+          # kubernetes.io/ingress.class: nginx
+          # kubernetes.io/tls-acme: "true"
+        hosts:
+          - host: ide.example.kws
+            paths:
+              - /
+        tls: []
+        #  - secretName: chart-example-tls
+        #    hosts:
+        #      - chart-example.local
+      persistence:
+        enabled: true
+        storageClass: "local-path"
+        accessMode: ReadWriteOnce
+        size: 10Gi
+        hostPath: "/kws_datas/kw-builder-ide"
+        mountPath: /config
+      securityContext:
+        allowPrivilegeEscalation: true
+        runAsGroup: 8443

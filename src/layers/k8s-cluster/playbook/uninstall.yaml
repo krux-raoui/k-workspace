@@ -1,15 +1,2 @@
-- name: "uninstalling layer"
-  hosts: localhost
-  tasks:
-    - name: check for platform support
-      stat:
-        path: "./platforms/{{ ansible_facts['os_family'] }}_{{ ansible_facts['architecture']}}/uninstall.yaml"
-      register: file_exists
-
-    - name: error if platform tasks doesn't exists
-      fail:
-        msg: "the platform {{ ansible_facts['os_family'] }} on {{ ansible_facts['architecture']}} isn't supported (yetà"
-      when: "not file_exists.stat.exists"
-
-    - name: uninstall layer for {{ ansible_facts['os_family'] }} on {{ ansible_facts['architecture']}} platform
-      include_tasks: "./platforms/{{ ansible_facts['os_family'] }}_{{ ansible_facts['architecture']}}/uninstall.yaml"
+- debug:
+    msg: "nothing to do"

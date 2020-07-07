@@ -1,8 +1,13 @@
-- hosts: localhost
-  tasks:
-    # General
-    - name: undeploy kw-builder-ide module
-      include_tasks: "../modules/kw-builder-ide/playbook/undeploy.yaml"
+- name: "undeploy {{ module_name }} module"
+  include_role:
+    name: kws_phase_module
+  vars:
+    module_name: kw-builder-ide
+    module_path: "../layers/builder-host/modules/kw-builder-ide"
 
-    - name: undeploy kw-builder-git module
-      include_tasks: "../modules/kw-builder-git/playbook/undeploy.yaml"
+- name: "undeploy {{ module_name }} module"
+  include_role:
+    name: kws_phase_module
+  vars:
+    module_name: kw-builder-git
+    module_path: "../layers/builder-host/modules/kw-builder-git"

@@ -1,0 +1,2 @@
+- name: "{{ phase }} module {{ module_path }}"
+  include_tasks: "{{ module_path }}/playbook/{{ phase }}.yaml"

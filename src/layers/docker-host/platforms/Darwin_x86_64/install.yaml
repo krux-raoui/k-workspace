@@ -1,0 +1,34 @@
+# install VirtualBox for docker-machine vbox driver
+- name: install virtualbox for mac via homebrew (cask)
+  homebrew_cask:
+    name: virtualbox
+    state: present
+  register: install_vbox
+- name: virtualbox launch after install
+  command:
+    argv:
+      - open
+      - /Applications/VirtualBox.app
+  when: install_vbox.changed
+- name: fail
+  fail:
+    msg: configure virtualbox before relaunching deployment
+  when: install_vbox.changed
+
+# install docker-cli
+- name: "installing docker cli via brew"
+  homebrew:
+    name: docker
+    state: present
+  register: install_docker_cli
+- name: "link docker cli via brew"
+  homebrew:
+    name: docker
+    state: linked
+  when: install_docker_cli.changed
+
+# install docker-machine
+- name: "installing docker-machine via brew"
+  homebrew:
+    name: docker-machine
+    state: present

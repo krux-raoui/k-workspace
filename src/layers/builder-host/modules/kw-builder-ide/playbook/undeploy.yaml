@@ -1,2 +1,9 @@
-- debug:
-    msg: "nothing to do"
+- name: "undeploy {{ module_name }} module"
+  include_role:
+    name: kws_undeploy_module
+  vars:
+    home_path: "{{ datas_host.root_path }}"
+    docker_machine_name: "{{ k8s_host.docker_machine_name }}"
+    k8s_context: "{{ k8s_cluster.k8s_context }}"
+    namespace: kw-builder-ide
+    module_name: kw-builder-ide-vscode

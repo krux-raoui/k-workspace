@@ -1,5 +1,5 @@
-kw-builder-git:
-  helm-values:
+kw-builder-ide:
+  helm_values:
     replicaCount: 1
     image:
       repository: nginx
@@ -13,8 +13,9 @@ kw-builder-git:
         # kubernetes.io/ingress.class: nginx
         # kubernetes.io/tls-acme: "true"
       hosts:
-        - host: git.example.kws
-          paths: /
+        - host: ide.example.kws
+          paths:
+            - /
       tls: []
       #  - secretName: chart-example-tls
       #    hosts:

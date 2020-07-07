@@ -1,0 +1,22 @@
+
+# install kind cli
+- name: install kind cli via homebrew
+  homebrew:
+    name: kind
+    state: present
+- name: "installing helm 3 cli via brew"
+  homebrew:
+    name: helm
+    state: present
+- name: "link helm3 cli via brew"
+  homebrew:
+    name: helm
+    state: linked
+- name: "installing kubectl cli via brew"
+  homebrew:
+    name: kubectl
+    state: present
+- name: "link kubectl cli via brew"
+  homebrew:
+    name: kubectl
+    state: linked

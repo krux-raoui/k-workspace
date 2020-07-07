@@ -1,0 +1,17 @@
+- name: "uninstalling helm3 cli via brew"
+  homebrew:
+    name: helm
+    state: absent
+
+- name: "uninstalling kubectl cli via brew"
+  homebrew:
+    name: kubectl
+    state: absent
+
+- name: uninstalling kind cli via homebrew
+  homebrew:
+    name: kind
+    state: absent
+
+
+

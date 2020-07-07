@@ -1,15 +1,13 @@
-- name: "undeploy layer"
-  hosts: localhost
-  tasks:
-    - name: check for platform support
-      stat:
-        path: "./platforms/{{ ansible_facts['os_family'] }}_{{ ansible_facts['architecture']}}/undeploy.yaml"
-      register: file_exists
+- name: undeploy k8s kind cluster
+  include_role:
+    name: kws_undeploy_kind_cluster
+  vars:
+    home_path: "{{ datas_host.root_path }}"
+    docker_machine_name: "{{ k8s_host.docker_machine_name }}"
 
-    - name: error if platform tasks doesn't exists
-      fail:
-        msg: "the platform {{ ansible_facts['os_family'] }} on {{ ansible_facts['architecture']}} isn't supported (yetà"
-      when: "not file_exists.stat.exists"
-
-    - name: uninstall layer for {{ ansible_facts['os_family'] }} on {{ ansible_facts['architecture']}} platform
-      include_tasks: "./platforms/{{ ansible_facts['os_family'] }}_{{ ansible_facts['architecture']}}/undeploy.yaml"
+- name: undeploy k8s docker-machine
+  include_role:
+    name: kws_undeploy_docker_context
+  vars:
+    home_path: "{{ datas_host.root_path }}"
+    docker_machine_name: "{{ k8s_host.docker_machine_name }}"

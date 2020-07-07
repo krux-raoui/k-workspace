@@ -1,5 +1,5 @@
 kw-builder-git:
-  helm-values:
+  helm_values:
     replicaCount: 1
     image:
       repository: gogs/gogs
@@ -14,7 +14,8 @@ kw-builder-git:
         # kubernetes.io/tls-acme: "true"
       hosts:
         - host: git.example.kws
-          paths: /
+          paths:
+            - /
       tls: []
       #  - secretName: chart-example-tls
       #    hosts:

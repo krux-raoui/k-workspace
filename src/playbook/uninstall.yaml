@@ -1,16 +1,31 @@
-# uninstall process
+- name: "{{ phase }} process"
+  hosts: localhost
+  vars:
+    phase: uninstall
+  vars_prompt:
+    - name: "remove_datas_root"
+      prompt: "Are you sure to delete all your data root folder ({{ datas_host.root_path }}) (yes/no)?"
+      private: no
+  roles:
+    - role: kws_phase_layer
+      layer: "builder-host"
 
-- name: "builder-host layer"
-  import_playbook: "../layers/builder-host/playbook/uninstall.yaml"
+    - role: kws_phase_layer
+      layer: "k8s-cluster"
 
-- name: "k8s-cluster layer"
-  import_playbook: "../layers/k8s-cluster/playbook/uninstall.yaml"
+    - role: kws_phase_layer
+      layer: "dns-host"
 
-- name: "dns-host layer"
-  import_playbook: "../layers/dns-host/playbook/uninstall.yaml"
+    - role: kws_phase_layer
+      layer: "k8s-host"
 
-- name: "k8s-host layer"
-  import_playbook: "../layers/k8s-host/playbook/uninstall.yaml"
+    - role: kws_phase_layer
+      layer: "registry-host"
 
-- name: "datas-host layer"
-  import_playbook: "../layers/datas-host/playbook/uninstall.yaml"
+    - role: kws_phase_layer
+      layer: "docker-host"
+
+    - role: kws_phase_layer
+      layer: "datas-host"
+      when:
+        - "remove_datas_root | bool" 
