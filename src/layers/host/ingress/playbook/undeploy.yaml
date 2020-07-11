@@ -1,0 +1,20 @@
+- name: deploying nginx ingress
+  k8s:
+    state: absent
+    context: "{{  configs.host.k8s.context  }}"
+    src: "{{ layer_path }}/k8s/kind-nginx-ingress.yaml"
+
+- name: wait for namespace for ingress-nginx deletion completed
+  command:
+    argv:
+      - kubectl
+      - wait
+      - --context
+      - "{{ configs.host.k8s.context }}"
+      - --for=delete
+      - namespace/ingress-nginx
+      - --timeout=90s
+  register: wait_delete
+  failed_when:
+    - "not 'not found' in wait_delete.stderr"
+    - "not 'condition met' in wait_delete.stdout"

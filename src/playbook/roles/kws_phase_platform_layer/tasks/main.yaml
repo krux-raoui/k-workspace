@@ -1,12 +1,12 @@
-- name: check for platform support for {{ phase }} layer {{ layer }}
+- name: check for platform support for {{ phase }} of {{ group }}/{{ layer }}
   stat:
-    path: "../layers/{{ layer }}/platforms/{{ ansible_facts['os_family'] }}_{{ ansible_facts['architecture']}}/{{ phase }}.yaml"
+    path: "../layers/{{ group }}/{{ layer }}/platforms/{{ ansible_facts['os_family'] }}_{{ ansible_facts['architecture']}}/{{ phase }}.yaml"
   register: file_exists
-  
+
 - name: error if platform tasks doesn't exists  for {{ phase }} layer {{ layer }}
   fail:
     msg: "the platform {{ ansible_facts['os_family'] }} on {{ ansible_facts['architecture']}} isn't supported (yet)"
   when: "not file_exists.stat.exists"
 
-- name: install {{ ansible_facts['os_family'] }} on {{ ansible_facts['architecture']}} platform for {{ phase }} layer {{ layer }}
-  include_tasks: "../layers/{{ layer }}/platforms/{{ ansible_facts['os_family'] }}_{{ ansible_facts['architecture']}}/{{ phase }}.yaml"
+- name: "{{ phase }} for {{ ansible_facts['os_family'] }} on {{ ansible_facts['architecture']}} platform of {{ layer }}"
+  include_tasks: "../layers/{{ group }}/{{ layer }}/platforms/{{ ansible_facts['os_family'] }}_{{ ansible_facts['architecture']}}/{{ phase }}.yaml"

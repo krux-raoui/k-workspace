@@ -1,0 +1,19 @@
+- name: building kws-builder-ide image
+  docker_image:
+    build:
+      path: "{{ layer_path }}/image/"
+      pull: yes
+    name: "localhost:{{ configs.host.registry.port }}/{{ env_name }}/kws-builder-ide"
+    tag: latest
+    push: yes
+    source: build
+
+- name: "deploy {{ module_name }} module"
+  include_role:
+    name: kws_deploy_module
+  vars:
+    k8s_context: "{{ configs.host.k8s.context }}"
+    namespace: kws-builder-ide
+    module_name: kws-builder-ide-vscode
+    chart_path: "{{ layer_path }}/chart/"
+    helm_values: "{{ configs.builder.ide.helm_values }}"

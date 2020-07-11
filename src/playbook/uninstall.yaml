@@ -4,28 +4,22 @@
     phase: uninstall
   vars_prompt:
     - name: "remove_datas_root"
-      prompt: "Are you sure to delete all your data root folder ({{ datas_host.root_path }}) (yes/no)?"
+      prompt: "Are you sure to delete all your data root folder ({{ configs.core.datas.root_path }}) (yes/no)?"
       private: no
-  roles:
-    - role: kws_phase_layer
-      layer: "builder-host"
 
-    - role: kws_phase_layer
-      layer: "k8s-cluster"
+  tasks:
+    - name: "host layer"
+      include_role:
+        name: kws_phase_layer
+      vars:
+        group: host
+        layer: "{{ item }}"
+      with_items: "{{ layers.host | reverse | list }}"
 
-    - role: kws_phase_layer
-      layer: "dns-host"
-
-    - role: kws_phase_layer
-      layer: "k8s-host"
-
-    - role: kws_phase_layer
-      layer: "registry-host"
-
-    - role: kws_phase_layer
-      layer: "docker-host"
-
-    - role: kws_phase_layer
-      layer: "datas-host"
-      when:
-        - "remove_datas_root | bool" 
+    - name: "core layer"
+      include_role:
+        name: kws_phase_layer
+      vars:
+        group: core
+        layer: "{{ item }}"
+      with_items: "{{ layers.core | reverse | list }}"

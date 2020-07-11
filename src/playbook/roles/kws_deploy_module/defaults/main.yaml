@@ -1,6 +1,4 @@
 env_name:
-home_path:
-docker_machine_name:
 k8s_context:
 namespace: 
 module_name: 

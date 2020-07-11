@@ -1,0 +1,9 @@
+- name: undeploy k8s kind cluster
+  include_role:
+    name: kws_undeploy_kind_cluster
+  vars:
+    home_path: "{{ configs.core.datas.root_path }}"
+
+- name: "{{ phase }} platform layer for {{ layer }}"
+  include_role:
+    name: kws_phase_platform_layer

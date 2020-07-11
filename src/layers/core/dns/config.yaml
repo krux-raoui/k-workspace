@@ -1,0 +1,6 @@
+#Specific layer défault config
+configs:
+  core:
+    dns:
+      tld: "{{ env_name }}.kws"
+      use_dnsmasq: true

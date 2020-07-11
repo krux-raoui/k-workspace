@@ -1,4 +1,4 @@
-USER_CONFIG?=./configs/temp.yaml
+USER_CONFIG?=./configs/example.yaml
 # USER_CONFIG?=./configs/example.yaml #run
 VERBOSITY?="-v"
 # VERBOSITY="-vvv" # Debug mode
@@ -23,3 +23,9 @@ up:
 
 down: 
 	@ansible-playbook ./src/playbook/down.yaml $(VERBOSITY)  --extra-vars "@${USER_CONFIG}" $(BECOME_ARGS)
+
+
+debug_up: 
+	@ansible-playbook ./src/playbook/up.yaml $(VERBOSITY)  --extra-vars "@${USER_CONFIG}" 
+debug_down: 
+	@ansible-playbook ./src/playbook/down.yaml $(VERBOSITY)  --extra-vars "@${USER_CONFIG}" 

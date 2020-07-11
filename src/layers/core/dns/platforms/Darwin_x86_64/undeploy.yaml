@@ -1,0 +1,22 @@
+
+- name: get brew root path
+  shell: "brew --prefix"
+  register: "brew_prefix"
+  when: configs.core.dns.use_dnsmasq
+
+- name: write dnsmasq domain file
+  blockinfile:
+    path: "{{ brew_prefix.stdout }}/etc/dnsmasq.d/{{ configs.core.dns.tld }}.conf"
+    block: ""
+    marker: "# {mark} {{ env_name }} ANSIBLE MANAGED BLOCK"
+  when: configs.core.dns.use_dnsmasq
+
+- name: restart dnsmasq
+  become: yes
+  shell: "brew services restart dnsmasq"
+  when: configs.core.dns.use_dnsmasq
+
+- name: reset dns cache
+  become: yes
+  shell: "killall -HUP mDNSResponder"
+  when: configs.core.dns.use_dnsmasq

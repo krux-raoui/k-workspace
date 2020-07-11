@@ -1,4 +1,0 @@
-- name: remove root datas folder
-  file:
-    path: "{{ datas_host.root_path }}"
-    state: "absent"

@@ -1,2 +1,2 @@
-module_path:
-phase:
+layer: hello-world
+phase: none

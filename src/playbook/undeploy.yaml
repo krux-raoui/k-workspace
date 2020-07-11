@@ -2,24 +2,28 @@
   hosts: localhost
   vars:
     phase: undeploy
-  roles:
-    - role: kws_phase_layer
-      layer: "builder-host"
+  vars_prompt:
+  tasks:
+    - name: "builder layer"
+      include_role:
+        name: kws_phase_layer
+      vars:
+        group: builder
+        layer: "{{ item }}"
+      with_items: "{{ layers.builder | reverse | list }}"
 
-    - role: kws_phase_layer
-      layer: "k8s-cluster"
+    - name: "host layer"
+      include_role:
+        name: kws_phase_layer
+      vars:
+        group: host
+        layer: "{{ item }}"
+      with_items: "{{ layers.host | reverse | list }}"
 
-    - role: kws_phase_layer
-      layer: "dns-host"
-
-    - role: kws_phase_layer
-      layer: "k8s-host"
-
-    - role: kws_phase_layer
-      layer: "registry-host"
-
-    - role: kws_phase_layer
-      layer: "docker-host"
-
-    - role: kws_phase_layer
-      layer: "datas-host"
+    - name: "core layer"
+      include_role:
+        name: kws_phase_layer
+      vars:
+        group: core
+        layer: "{{ item }}"
+      with_items: "{{ layers.core | reverse | list }}"

@@ -1,0 +1,6 @@
+# install docker-components
+- name: "uninstalling docker for mac via brew (cask)"
+  homebrew_cask:
+    name: 
+      - docker
+    state: absent

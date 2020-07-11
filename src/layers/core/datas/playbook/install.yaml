@@ -1,0 +1,10 @@
+- name: create root datas folder
+  file:
+    path: "{{ configs.core.datas.root_path }}"
+    state: "directory"
+    recurse: yes
+
+- name: check if docker-machine folder exists
+  file:
+    path: "{{ configs.core.datas.root_path }}/.docker"
+    state: directory

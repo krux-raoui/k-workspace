@@ -1,0 +1,5 @@
+#layer défault config
+configs:
+  core:
+    docker:
+      install_docker: no # set to yes if you want docker to be install for current platform (if supported)

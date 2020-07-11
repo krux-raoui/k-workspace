@@ -1,0 +1,52 @@
+- name: "installing dnsmasq via brew"
+  homebrew:
+    name: dnsmasq
+    state: present
+  when: configs.core.dns.use_dnsmasq
+
+- name: get brew root path
+  shell: "brew --prefix"
+  register: "brew_prefix"
+  when: configs.core.dns.use_dnsmasq
+- name: create dnsmasq etc folder
+  file:
+    path: "{{ brew_prefix.stdout }}/etc"
+    state: directory
+    recurse: yes
+  when: configs.core.dns.use_dnsmasq
+- name: setup dnsmasq port
+  blockinfile:
+    path: "{{ brew_prefix.stdout }}/etc/dnsmasq.conf"
+    block: |
+      port=53
+    marker: "# {mark} ANSIBLE MANAGED BLOCK"
+  when: configs.core.dns.use_dnsmasq
+- name: create dnsmasq local tld conf
+  file:
+    path: "{{ brew_prefix.stdout }}/etc/dnsmasq.d/{{ configs.core.dns.tld }}.conf"
+    state: touch
+  when: configs.core.dns.use_dnsmasq
+- name: create resolver folder
+  become: yes
+  file:
+    path: "/etc/resolver"
+    state: directory
+    recurse: yes
+  when: configs.core.dns.use_dnsmasq
+- name: create resolver folder
+  become: yes
+  file:
+    path: "/etc/resolver/{{ configs.core.dns.tld }}"
+    state: touch
+  when: configs.core.dns.use_dnsmasq
+
+- name: setup local resolver
+  become: yes
+  blockinfile:
+    path: "/etc/resolver/{{ configs.core.dns.tld }}"
+    block: |
+      nameserver 127.0.0.1
+    marker: "# {mark} ANSIBLE MANAGED BLOCK"
+  when: configs.core.dns.use_dnsmasq
+
+

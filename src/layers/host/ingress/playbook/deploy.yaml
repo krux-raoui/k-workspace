@@ -1,0 +1,20 @@
+- name: deploying nginx ingress
+  k8s:
+    state: present
+    context: "{{  configs.host.k8s.context  }}"
+    src: "{{ layer_path }}/k8s/kind-nginx-ingress.yaml"
+    apply: yes
+
+- name: waiting for nginx ingress ready
+  command:
+    argv:
+      - kubectl
+      - wait
+      - --context
+      - "{{ configs.host.k8s.context }}"
+      - --namespace
+      - ingress-nginx
+      - --for=condition=ready
+      - pod
+      - --selector=app.kubernetes.io/component=controller
+      - --timeout=90s

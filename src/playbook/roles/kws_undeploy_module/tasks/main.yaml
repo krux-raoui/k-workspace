@@ -1,15 +1,3 @@
-- name: extracting docker-machine env vars
-  shell: "sh ./roles/common/files/extract-docker-machine-vars.sh {{ docker_machine_name }}"
-  register: docker_machine_env_exports
-  changed_when: no
-  environment:
-    HOME: "{{ home_path }}"
-
-- name: setting variables in task context
-  set_fact:
-    key_value: "true" # warning disable in vscode ( not needed for real)
-    docker_machine_env: "{{ docker_machine_env_exports.stdout | from_json }}"
-
 - name: check for cluster
   command:
     argv:
@@ -18,12 +6,7 @@
       - clusters
   register: clusters_list
   changed_when: no
-  environment:
-    HOME: "{{ home_path }}"
-    DOCKER_CERT_PATH: "{{ docker_machine_env.DOCKER_CERT_PATH }}"
-    DOCKER_HOST: "{{ docker_machine_env.DOCKER_HOST }}"
-    DOCKER_MACHINE_NAME: "{{ docker_machine_env.DOCKER_MACHINE_NAME }}"
-    DOCKER_TLS_VERIFY: "{{ docker_machine_env.DOCKER_TLS_VERIFY }}"
+
 - name: uninstall {{ module_name }} helm chart
   command:
     argv:
@@ -40,12 +23,7 @@
     - "'release: not found' not in uninstall_helm.stderr"
     - "'Kubernetes cluster unreachable:' not in uninstall_helm.stderr"
     - "'uninstalled' not in uninstall_helm.stdout"
-  environment:
-    HOME: "{{ home_path }}"
-    DOCKER_CERT_PATH: "{{ docker_machine_env.DOCKER_CERT_PATH }}"
-    DOCKER_HOST: "{{ docker_machine_env.DOCKER_HOST }}"
-    DOCKER_MACHINE_NAME: "{{ docker_machine_env.DOCKER_MACHINE_NAME }}"
-    DOCKER_TLS_VERIFY: "{{ docker_machine_env.DOCKER_TLS_VERIFY }}"
+
 - name: delete {{ module_name }} namespace
   k8s:
     state: absent
@@ -53,14 +31,9 @@
     api_version: v1
     kind: Namespace
     name: "{{ namespace }}"
-
-  when: "env_name in clusters_list.stdout"
-  environment:
-    HOME: "{{ home_path }}"
-    DOCKER_CERT_PATH: "{{ docker_machine_env.DOCKER_CERT_PATH }}"
-    DOCKER_HOST: "{{ docker_machine_env.DOCKER_HOST }}"
-    DOCKER_MACHINE_NAME: "{{ docker_machine_env.DOCKER_MACHINE_NAME }}"
-    DOCKER_TLS_VERIFY: "{{ docker_machine_env.DOCKER_TLS_VERIFY }}"
+  when:
+    - "env_name in clusters_list.stdout"
+    - "'Kubernetes cluster unreachable:' not in uninstall_helm.stderr"
 
 - name: wait for namespace for {{ module_name }} deletion completed
   command:
@@ -73,13 +46,9 @@
       - namespace/{{ namespace }}
       - --timeout=90s
   register: wait_delete
-  when: "env_name in clusters_list.stdout"
+  when:
+    - "env_name in clusters_list.stdout"
+    - "'Kubernetes cluster unreachable:' not in uninstall_helm.stderr"
   failed_when:
     - "not 'not found' in wait_delete.stderr"
     - "not 'condition met' in wait_delete.stdout"
-  environment:
-    HOME: "{{ home_path }}"
-    DOCKER_CERT_PATH: "{{ docker_machine_env.DOCKER_CERT_PATH }}"
-    DOCKER_HOST: "{{ docker_machine_env.DOCKER_HOST }}"
-    DOCKER_MACHINE_NAME: "{{ docker_machine_env.DOCKER_MACHINE_NAME }}"
-    DOCKER_TLS_VERIFY: "{{ docker_machine_env.DOCKER_TLS_VERIFY }}"

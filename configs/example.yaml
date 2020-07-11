@@ -1,118 +1,135 @@
 #global config
 env_name: "example"
 user_home_path: "{{ lookup('env','HOME') }}"
+host_ip: 127.0.0.1
+host_dns: "{{ env_name }}.kws"
+layers:
+  core:
+    # []
+    - datas
+    - docker
+    - dns
+  host:
+    # []
+    - registry
+    - k8s
+    - ingress
+  builder:
+    #  []
+    - git
+    - ide
 
-datas_host:
-  root_path: "{{ user_home_path }}/kws_{{ env_name }}_datas"
+configs:
+  core:
+    datas:
+      root_path: "{{ user_home_path }}/kws_{{ env_name }}_datas"
+    dns:
+      tld: "{{ host_dns }}"
+      use_dnsmasq: true
+    docker:
+      install_docker: no # set to yes if you want docker to be install for current platform (if supported)
+  host:
+    registry:
+      port: 5000
+      container_name: "kws-{{ env_name }}-registry"
+    k8s:
+      shared_folder: "{{ user_home_path }}/kws_{{ env_name }}_datas/shared"
+      context: "kind-{{ env_name }}"
+  builder:
+    git:
+      helm_values:
+        containerPort: 3000
+        mountPath: /data
+        replicaCount: 1
+        image:
+          repository: gogs/gogs
+          pullPolicy: IfNotPresent
+          tag: "latest"
 
-dns_host:
-  tld: "{{ env_name }}.kws"
-
-k8s_host:
-  shared_folder: "{{ user_home_path }}/kws_{{ env_name }}_datas/shared"
-  cpu_count: 2 # more than one is recommanded for best performances
-  memory: 4096
-  disk_size: 20000
-  network_cidr: "192.168.99.1/24"
-  #TODO: build my own boot2docker fork ( original source is deprecated and not working properly with 19.03.5 latest release )
-  #boot2docker_iso_url: "https://github.com/boot2docker/boot2docker/releases/download/v19.03.5/boot2docker.iso"
-  boot2docker_iso_url: /Users/krux/repos/opensource/boot2docker/kw-boot2docker.iso
-k8s_cluster:
-  k8s_context: "kind-{{ env_name }}"
-
-builder_host:
-  kw-builder-git:
-    helm_values:
-      containerPort: 3000
-      mountPath: /data
-      replicaCount: 1
-      image:
-        repository: gogs/gogs
-        pullPolicy: IfNotPresent
-        tag: "latest"
-
-      ingress:
-        enabled: true
-        annotations: {}
-        hosts:
-          - host: git.example.kws
-            paths:
-              - /
-        tls: []
-      persistence:
-        enabled: true
-        storageClass: "local-path"
-        accessMode: ReadWriteOnce
-        size: 10Gi
-        hostPath: "/kws_datas/kw-builder-git"
-    gogs_values:
-      db_type: SQLite3
-      db_host:
-      db_user:
-      db_passwd:
-      db_name: gogs
-      ssl_mode: disable
-      db_path: /data/git/gogs.db
-      app_name: kws-git
-      repo_root_path: /data/git/gogs-repositories
-      run_user: git
-      domain: localhost
-      ssh_port:
-      http_port: 3000
-      app_url: http://git.{{ dns_host.tld }}
-      log_root_path: /data/git/log
-      smtp_host:
-      smtp_from:
-      smtp_user:
-      smtp_passwd:
-      disable_registration: on
-      admin_name: gogs
-      admin_passwd: changeme
-      admin_confirm_passwd: changeme
-      admin_email: gogs@example.kws
-  kw-builder-ide:
-    helm_values:
-      replicaCount: 1
-      image:        
-        name: kw-builder-ide-vscode
-        pullPolicy: IfNotPresent
-        tag: "latest"
-      container:
-        containerPort: 8443
-        env:
-          - name: PROXY_DOMAIN
-            value: ide.example.kws
-          - name: PASSWORD
-            value: changeme
-          - name: SUDO_PASSWORD
-            value: changeme
-          - name: TZ
-            value: Europe/Paris
-          - name: PUID
-            value: 1000
-          - name: PGID
-            value: 1000
-      ingress:
-        enabled: true
-        annotations:
-          {}
-          # kubernetes.io/ingress.class: nginx
-          # kubernetes.io/tls-acme: "true"
-        hosts:
-          - host: ide.example.kws
-            paths:
-              - /
-        tls: []
-        #  - secretName: chart-example-tls
-        #    hosts:
-        #      - chart-example.local
-      persistence:
-        enabled: true
-        storageClass: "local-path"
-        accessMode: ReadWriteOnce
-        size: 10Gi
-        hostPath: "/kws_datas/kw-builder-ide"
-        mountPath: /config
-      securityContext:
-        allowPrivilegeEscalation: true
-        runAsGroup: 8443
+        ingress:
+          enabled: true
+          annotations: {}
+          hosts:
+            - host: "git.{{ host_dns }}"
+              paths:
+                - /
+          tls: []
+        persistence:
+          enabled: true
+          storageClass: "local-path"
+          accessMode: ReadWriteOnce
+          size: 10Gi
+          hostPath: "/kws_datas/kws-builder-git"
+      gogs_values:
+        db_type: SQLite3
+        db_host:
+        db_user:
+        db_passwd:
+        db_name: gogs
+        ssl_mode: disable
+        db_path: /data/git/gogs.db
+        app_name: kws-git
+        repo_root_path: /data/git/gogs-repositories
+        run_user: git
+        domain: localhost
+        ssh_port:
+        http_port: 3000
+        app_url: http://git.{{ host_dns}}
+        log_root_path: /data/git/log
+        smtp_host:
+        smtp_from:
+        smtp_user:
+        smtp_passwd:
+        disable_registration: on
+        admin_name: gogs
+        admin_passwd: changeme
+        admin_confirm_passwd: changeme
+        admin_email: gogs@example.kws
+    ide:
+      helm_values:
+        replicaCount: 1
+        image:
+          registry: localhost:5000
+          name: "{{ env_name }}/kws-builder-ide"
+          pullPolicy: IfNotPresent
+          tag: "latest"
+        container:
+          containerPort: 8443
+          env:
+            - name: PROXY_DOMAIN
+              value: ide.example.kws
+            - name: PASSWORD
+              value: changeme
+            - name: SUDO_PASSWORD
+              value: changeme
+            - name: TZ
+              value: Europe/Paris
+            - name: PUID
+              value: 1000
+            - name: PGID
+              value: 1000
+        ingress:
+          enabled: true
+          annotations:
+            {}
+            # kubernetes.io/ingress.class: nginx
+            # kubernetes.io/tls-acme: "true"
+          hosts:
+            - host: ide.{{ host_dns }}
+              paths:
+                - /
+          tls:
+            []
+            # - secretName: chart-example-tls
+            #   hosts:
+            #     - ide.{{ host_dns }}
+        persistence:
+          enabled: true
+          storageClass: "local-path"
+          accessMode: ReadWriteOnce
+          size: 10Gi
+          hostPath: "/kws_datas/kws-builder-ide"
+          mountPath: /config
+        securityContext:
+          allowPrivilegeEscalation: true
+          runAsGroup: 8443

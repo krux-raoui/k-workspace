@@ -1,0 +1,14 @@
+# install docker-components
+- name: "installing docker for mac via brew (cask)"
+  homebrew_cask:
+    name:
+      - docker
+    state: present
+  register: docker_install
+- name: open for first time
+  shell: open /Applications/docker.app
+  when: docker_install.changed
+- name: stop process until docker for mac is properly start (relaunch after install and docker readyness ) 
+  fail:
+    msg: stopping {{ phase }} until until docker for mac is properly start (relaunch after install and docker readyness ) 
+  when: docker_install.changed

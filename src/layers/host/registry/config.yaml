@@ -1,0 +1,5 @@
+configs:
+  host:
+    registry:
+      port: 5000
+      container_name: "kws-{{ env_name }}-registry"

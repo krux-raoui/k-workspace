@@ -1,0 +1,32 @@
+- name: stoping dnsmasq
+  become: yes
+  shell: "brew services stop dnsmasq"
+  register: stop_service
+  failed_when:
+    - not 'is not started' in stop_service.stderr
+    - not 'Successfully stopped' in stop_service.stdout
+  when: configs.core.dns.use_dnsmasq
+- name: get brew root path
+  shell: "brew --prefix"
+  register: "brew_prefix"
+  when: configs.core.dns.use_dnsmasq
+- name: delete dnsmasq local tld conf
+  file:
+    path: "{{ brew_prefix.stdout }}/etc/dnsmasq.d/{{ configs.core.dns.tld }}.conf"
+    state: absent
+  when: configs.core.dns.use_dnsmasq
+- name: "uninstalling dnsmasq via brew"
+  homebrew:
+    name: dnsmasq
+    state: absent
+  register: uninstall_dnsmasq
+  failed_when: no
+  when: configs.core.dns.use_dnsmasq
+- name: "ensure dnsmasq fully uninstalled"
+  become: yes
+  file:
+    path: /usr/local/Cellar/dnsmasq/
+    state: absent
+  when:
+    - "'Could not remove' in uninstall_dnsmasq.msg"
+    - configs.core.dns.use_dnsmasq

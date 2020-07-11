@@ -2,24 +2,20 @@
   hosts: localhost
   vars:
     phase: install
-  roles:
-    - role: kws_phase_layer
-      layer: "datas-host"
+  tasks:
+    - name: "core layer"
+      include_role:
+        name: kws_phase_layer
+      vars:
+        group: core
+        layer: "{{ item }}"
+      with_items: "{{ layers.core }}"
 
-    - role: kws_phase_layer
-      layer: "docker-host"
-
-    - role: kws_phase_layer
-      layer: "registry-host"
-
-    - role: kws_phase_layer
-      layer: "k8s-host"
-
-    - role: kws_phase_layer
-      layer: "dns-host"
-
-    - role: kws_phase_layer
-      layer: "k8s-cluster"
-
-    - role: kws_phase_layer
-      layer: "builder-host"
+    - name: "host layer"
+      include_role:
+        name: kws_phase_layer
+      vars:
+        group: host
+        layer: "{{ item }}"
+      with_items: "{{ layers.host }}"
+  

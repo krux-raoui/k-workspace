@@ -1,0 +1,5 @@
+configs:
+  host:
+    k8s:
+      shared_folder: "{{ user_home_path }}/kws_{{ env_name }}_datas/shared"
+      context: "kind-{{ env_name }}"

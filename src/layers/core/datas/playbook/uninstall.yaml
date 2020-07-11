@@ -1,0 +1,6 @@
+- name: remove root datas folder
+  file:
+    path: "{{ configs.core.datas.root_path }}"
+    state: "absent"
+  when:
+    - "remove_datas_root | bool"

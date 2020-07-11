@@ -1,0 +1,10 @@
+- name: undeploy registry container
+  docker_container:
+    name: "{{ configs.host.registry.container_name }}"
+    image: registry:2
+    ports:
+      - "{{ configs.host.registry.port }}:5000"
+    volumes:
+      - "{{ configs.core.datas.root_path }}/registry:/var/lib/registry"
+    restart_policy: always
+    state: absent

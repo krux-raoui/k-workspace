@@ -1,5 +1,0 @@
-docker_machine_name: undefined
-docker_machine_home: /nowhere/user
-result_registration: "kws_docker_command"
-command: "ls"
-cwd:

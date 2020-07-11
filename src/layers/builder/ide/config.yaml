@@ -1,0 +1,50 @@
+configs:
+  builder:
+    ide:
+      helm_values:
+        replicaCount: 1
+        image:
+          registry: localhost:5000
+          name: "{{ env_name }}/kws-builder-ide"
+          pullPolicy: IfNotPresent
+          tag: "latest"
+        container:
+          containerPort: 8443
+          env:
+            - name: PROXY_DOMAIN
+              value: ide.example.kws
+            - name: PASSWORD
+              value: changeme
+            - name: SUDO_PASSWORD
+              value: changeme
+            - name: TZ
+              value: Europe/Paris
+            - name: PUID
+              value: 1000
+            - name: PGID
+              value: 1000
+        ingress:
+          enabled: true
+          annotations:
+            # {}
+            kubernetes.io/ingress.class: nginx
+            kubernetes.io/tls-acme: "true"
+          hosts:
+            - host: ide.{{ host_dns }}
+              paths:
+                - /
+          tls:
+            # []
+            - secretName: chart-example-tls
+              hosts:
+                - ide.{{ host_dns }}
+        persistence:
+          enabled: true
+          storageClass: "local-path"
+          accessMode: ReadWriteOnce
+          size: 10Gi
+          hostPath: "/kws_datas/kws-builder-ide"
+          mountPath: /config
+        securityContext:
+          allowPrivilegeEscalation: true
+          runAsGroup: 8443

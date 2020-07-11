@@ -1,0 +1,7 @@
+- name: "undeploy {{ module_name }} module"
+  include_role:
+    name: kws_undeploy_module
+  vars:
+    k8s_context: "{{ configs.host.k8s.context }}"
+    namespace: kws-builder-git
+    module_name: kws-builder-git-gogs

@@ -1,0 +1,51 @@
+configs:
+  builder:
+    git:
+      helm_values:
+        containerPort: 3000
+        mountPath: /data
+        replicaCount: 1
+        image:
+          repository: gogs/gogs
+          pullPolicy: IfNotPresent
+          tag: "latest"
+
+        ingress:
+          enabled: true
+          annotations: {}
+          hosts:
+            - host: "git.{{ host_dns }}"
+              paths:
+                - /
+          tls: []
+        persistence:
+          enabled: true
+          storageClass: "local-path"
+          accessMode: ReadWriteOnce
+          size: 10Gi
+          hostPath: "/kws_datas/kws-builder-git"
+      gogs_values:
+        db_type: SQLite3
+        db_host:
+        db_user:
+        db_passwd:
+        db_name: gogs
+        ssl_mode: disable
+        db_path: /data/git/gogs.db
+        app_name: kws-git
+        repo_root_path: /data/git/gogs-repositories
+        run_user: git
+        domain: localhost
+        ssh_port:
+        http_port: 3000
+        app_url: http://git.{{ host_dns}}
+        log_root_path: /data/git/log
+        smtp_host:
+        smtp_from:
+        smtp_user:
+        smtp_passwd:
+        disable_registration: on
+        admin_name: gogs
+        admin_passwd: changeme
+        admin_confirm_passwd: changeme
+        admin_email: gogs@example.kws

@@ -1,3 +1,0 @@
-## k8s-cluster values
-k8s_cluster:
-  k8s_context: "kind-{{ env_name }}"

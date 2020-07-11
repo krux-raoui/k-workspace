@@ -1,2 +1,10 @@
-- name: "{{ phase }} layer {{ layer }}"
-  include_tasks: "../layers/{{ layer }}/playbook/{{ phase }}.yaml"
+- name: check if phase {{ phase }} for layer {{ group }}/{{ layer }} exists
+  stat:
+    path: "../layers/{{ group }}/{{ layer }}/playbook/{{ phase }}.yaml"
+  register: phase_file_exists
+
+- name: "{{ phase }} for layer {{ group }}/{{ layer }}"
+  include_tasks: "{{ layer_path }}/playbook/{{ phase }}.yaml"
+  vars:
+    layer_path: "../layers/{{ group }}/{{ layer }}"
+  when: phase_file_exists.stat.exists

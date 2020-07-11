@@ -1,0 +1,8 @@
+
+# install kind cli
+- name: install cli tools via homebrew
+  homebrew:
+    name: 
+      - kind
+      - helm
+    state: present

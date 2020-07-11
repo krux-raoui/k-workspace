@@ -1,9 +1,0 @@
-env_name:
-home_path:
-docker_machine_name:
-cpu_count:
-disk_size:
-network_cidr:
-memory:
-boot2docker_iso_url:
-insecure_registry:
