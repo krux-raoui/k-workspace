@@ -6,18 +6,19 @@ host_dns: "{{ env_name }}.kws"
 layers:
   core:
     # []
-    - datas
-    - docker
-    - dns
+    # - datas
+    # - docker
+    # - dns
+    - certs
   host:
-    # []
-    - registry
-    - k8s
-    - ingress
+    []
+    # - registry
+    # - k8s
+    # - ingress
   builder:
-    #  []
-    - git
-    - ide
+    []
+    # - git
+    # - ide
 
 configs:
   core:
@@ -53,7 +54,9 @@ configs:
             - host: "git.{{ host_dns }}"
               paths:
                 - /
-          tls: []
+          tls: 
+            - hosts:
+                - git.{{ host_dns }}
         persistence:
           enabled: true
           storageClass: "local-path"

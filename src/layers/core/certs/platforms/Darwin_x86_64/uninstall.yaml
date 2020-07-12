@@ -1,0 +1,16 @@
+- name: remove root-ca certificate locally
+  shell: security delete-certificate -c example.kws /Library/Keychains/System.keychain
+  become: yes
+  register: remove_root_ca
+  failed_when:
+    - "remove_root_ca.rc!=0"
+    - "not 'Unable to delete certificate matching' in remove_root_ca.stderr"
+- name: untrust root-ca certificate locally
+  shell: security remove-trusted-cert -d  "{{ configs.core.datas.root_path }}/certs/ca.crt"
+  become: yes
+  register: untrust_root_ca
+  failed_when:
+    - "untrust_root_ca.rc!=0"
+    - "not ' The specified item could not be found in the keychain' in untrust_root_ca.stderr"
+  when:
+    - "not 'Unable to delete certificate matching' in remove_root_ca.stderr"

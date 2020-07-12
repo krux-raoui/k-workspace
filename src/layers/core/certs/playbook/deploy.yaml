@@ -1,0 +1,28 @@
+- name: generating SSL private key
+  openssl_privatekey:
+    path: "{{ configs.core.datas.root_path }}/certs/ssl.private.key"
+    type: RSA
+
+- name: generate a ssl wildcard certificate request
+  openssl_csr:
+    path: "{{ configs.core.datas.root_path }}/certs/ssl.csr"
+    privatekey_path: "{{ configs.core.datas.root_path }}/certs/ssl.private.key"
+    country_name: FR
+    organization_name: k-workspace {{ env_name }}
+    email_address: "admin@{{ host_dns }}"
+    common_name: "{{ host_dns }}"
+    subject_alt_name: "DNS:{{ host_dns }},DNS:*.{{ host_dns }}"
+
+- name: sign ssl certificate with CA authority
+  openssl_certificate:
+    path: "{{ configs.core.datas.root_path }}/certs/ssl.crt"
+    csr_path: "{{ configs.core.datas.root_path }}/certs/ssl.csr"
+    ownca_path: "{{ configs.core.datas.root_path }}/certs/ca.crt"
+    ownca_privatekey_path: "{{ configs.core.datas.root_path }}/certs/ca.private.key"
+    ownca_privatekey_passphrase: changeme
+    ownca_not_after: "+350d"
+    provider: ownca
+
+- name: "{{ phase }} platform layer for {{ layer }}"
+  include_role:
+    name: kws_phase_platform_layer

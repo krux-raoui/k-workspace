@@ -1,0 +1,3 @@
+- name: trust root-ca certificate locally
+  shell: security add-trusted-cert -d -r trustRoot -k "/Library/Keychains/System.keychain" "{{ configs.core.datas.root_path }}/certs/ca.crt"
+  become: yes

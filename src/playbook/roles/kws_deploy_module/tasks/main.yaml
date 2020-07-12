@@ -20,7 +20,6 @@
           app.kubernetes.io/name: "{{ namespace }}"
           app.kubernetes.io/instance: "{{ namespace }}"
           ws.krux.io/backup-include: "true"
-
   when: "env_name in clusters_list.stdout"
 
 - name: create "temp" helm_values files for  {{ module_name }}"

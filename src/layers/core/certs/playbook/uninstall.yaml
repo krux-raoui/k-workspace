@@ -1,0 +1,8 @@
+- name: "{{ phase }} platform layer for {{ layer }}"
+  include_role:
+    name: kws_phase_platform_layer
+
+- name: delete root ssl folder
+  file:
+    path: "{{ configs.core.datas.root_path }}/certs"
+    state: "absent"

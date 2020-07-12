@@ -1,0 +1,38 @@
+- name: create root ssl folder
+  file:
+    path: "{{ configs.core.datas.root_path }}/certs"
+    state: "directory"
+    recurse: yes
+
+- name: generating CA private key
+  openssl_privatekey:
+    path: "{{ configs.core.datas.root_path }}/certs/ca.private.key"
+    passphrase: changeme
+    size: 4096
+    cipher: des3
+    type: RSA
+
+- name: generale CA root request
+  openssl_csr:
+    path: "{{ configs.core.datas.root_path }}/certs/ca.csr"
+    privatekey_path: "{{ configs.core.datas.root_path }}/certs/ca.private.key"
+    privatekey_passphrase: changeme
+    country_name: FR
+    organization_name: "k-workspace CA {{ env_name }}"
+    email_address: admin@{{env_name}}.kws
+    common_name: "{{env_name}}.kws"
+
+- name: self-sign root CA csr
+  openssl_certificate:
+    path: "{{ configs.core.datas.root_path }}/certs/ca.crt"
+    privatekey_path: "{{ configs.core.datas.root_path }}/certs/ca.private.key"
+    privatekey_passphrase: changeme
+    csr_path: "{{ configs.core.datas.root_path }}/certs/ca.csr"
+    provider: selfsigned
+    selfsigned_not_after: "+350d"
+  register: generate_ca_certificate
+
+- name: "{{ phase }} platform layer for {{ layer }}"
+  include_role:
+    name: kws_phase_platform_layer
+ 

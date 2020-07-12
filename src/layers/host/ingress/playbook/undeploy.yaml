@@ -1,4 +1,4 @@
-- name: deploying nginx ingress
+- name: undeploying nginx ingress
   k8s:
     state: absent
     context: "{{  configs.host.k8s.context  }}"

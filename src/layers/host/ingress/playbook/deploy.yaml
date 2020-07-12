@@ -1,3 +1,22 @@
+ 
+- name: create nginx ssl wildcard default tls secret
+  k8s:
+    state: present
+    context: "{{  configs.host.k8s.context  }}"
+    definition:
+      apiVersion: v1
+      type: kubernetes.io/tls
+      kind: Secret
+      metadata:
+        name: plop
+        namespace: default
+      data:
+        tls.crt: "{{ tls_crt }}"
+        tls.key: "{{ tls_key }}"
+  vars:
+    tls_crt: "{{ lookup('file', configs.core.datas.root_path + '/certs/ssl.crt' ) | b64encode }}"
+    tls_key: "{{ lookup('file', configs.core.datas.root_path + '/certs/ssl.private.key' ) | b64encode }}"
+
 - name: deploying nginx ingress
   k8s:
     state: present
