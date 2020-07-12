@@ -1,8 +1,8 @@
-
 # install kind cli
 - name: uninstall cli tools via homebrew
   homebrew:
-    name: 
+    name:
+      - kubernetes-cli
       - kind
       - helm
     state: absent

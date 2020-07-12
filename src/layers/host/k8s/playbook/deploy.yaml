@@ -2,12 +2,43 @@
   include_role:
     name: kws_phase_platform_layer
 
+- name: get local cluster kind
+  shell: kind get clusters
+  changed_when: false
+  register: clusters_list
+
+- name: create kind-node image tag serial
+  set_fact:
+    kind_node_tag_serial: "v{{ ansible_date_time.iso8601_basic }}"
+  when: "env_name not in clusters_list.stdout"
+- name: copy ca certificate to trust into image
+  copy:
+    src: "{{ configs.core.datas.root_path }}/certs/ca.crt"
+    dest: "{{ layer_path }}/image/kws.pem"
+  when: "env_name not in clusters_list.stdout"
+- name: building and push kind node image
+  docker_image:
+    build:
+      path: "{{ layer_path }}/image/"
+      pull: yes
+    name: "localhost:{{ configs.host.registry.port }}/{{ env_name }}/kws-kind-node"
+    tag: "{{ kind_node_tag_serial }}"
+    push: yes
+    source: build
+  when: "env_name not in clusters_list.stdout"
+- name: delete ca file
+  file:
+    path: "{{ layer_path }}/image/kws.pem"
+    state: absent
+  when: "env_name not in clusters_list.stdout"
+
 - name: deploy k8s kind cluster
   include_role:
     name: kws_deploy_kind_cluster
   vars:
     home_path: "{{ configs.core.datas.root_path }}"
+    node_image: "localhost:{{ configs.host.registry.port }}/{{ env_name }}/kws-kind-node:{{ kind_node_tag_serial }}"
     shared_folder: "{{ configs.host.k8s.shared_folder }}"
     registry_container_name: "{{ configs.host.registry.container_name }}"
     registry_container_port: "{{ configs.host.registry.port }}"
- 
+  when: "env_name not in clusters_list.stdout"

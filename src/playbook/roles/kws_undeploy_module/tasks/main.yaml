@@ -1,3 +1,9 @@
+- name: check for kind
+  shell: which kind
+  failed_when: no
+  changed_when: no
+  register: kind_present
+
 - name: check for cluster
   command:
     argv:
@@ -6,7 +12,8 @@
       - clusters
   register: clusters_list
   changed_when: no
-
+  when:
+    - "'kind' in kind_present.stdout"
 - name: uninstall {{ module_name }} helm chart
   command:
     argv:
@@ -18,7 +25,9 @@
       - "{{ namespace }}"
       - "{{ module_name }}"
   register: uninstall_helm
-  when: "env_name in clusters_list.stdout"
+  when:
+    - "'kind' in kind_present.stdout"
+    - "env_name in clusters_list.stdout"
   failed_when:
     - "'release: not found' not in uninstall_helm.stderr"
     - "'Kubernetes cluster unreachable:' not in uninstall_helm.stderr"
@@ -32,6 +41,7 @@
     kind: Namespace
     name: "{{ namespace }}"
   when:
+    - "'kind' in kind_present.stdout"
     - "env_name in clusters_list.stdout"
     - "'Kubernetes cluster unreachable:' not in uninstall_helm.stderr"
 
@@ -47,8 +57,10 @@
       - --timeout=90s
   register: wait_delete
   when:
+    - "'kind' in kind_present.stdout"
     - "env_name in clusters_list.stdout"
     - "'Kubernetes cluster unreachable:' not in uninstall_helm.stderr"
+
   failed_when:
     - "not 'not found' in wait_delete.stderr"
     - "not 'condition met' in wait_delete.stdout"

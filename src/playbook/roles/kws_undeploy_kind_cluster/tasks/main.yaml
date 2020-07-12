@@ -1,8 +1,15 @@
+- name: check for kind
+  shell: which kind
+  failed_when: no
+  changed_when: no
+  register: kind_present
+
 - name: get local cluster kind
   shell: kind get clusters
   changed_when: false
   register: clusters_list
-
+  when:
+    - "'kind' in kind_present.stdout"
 - name: delete kind cluster
   command:
     argv:
@@ -11,10 +18,13 @@
       - cluster
       - --name
       - "{{ env_name }}"
-  when: "env_name in clusters_list.stdout"
+  when:
+    - "'kind' in kind_present.stdout"
+    - "env_name in clusters_list.stdout"
 
 - name: remove kind context
   command:
     cmd: kubectl config unset contexts.kind-{{ env_name }}
-  when: "env_name not in clusters_list.stdout"
-
+  when:
+    - "'kind' in kind_present.stdout"
+    - "env_name not in clusters_list.stdout"

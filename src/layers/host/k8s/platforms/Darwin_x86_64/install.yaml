@@ -5,4 +5,5 @@
     name: 
       - kind
       - helm
+      - kubernetes-cli
     state: present

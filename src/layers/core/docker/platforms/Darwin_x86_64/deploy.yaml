@@ -1,10 +1,5 @@
-# check docker-machine presence
-- name: check if docker-machine {{ configs.core.docker.machine_name }} already exists
+- name: check if docker is ready
   command:
     argv:
-      - docker 
+      - docker
       - ps
-      
-  
-  environment:
-    HOME: "{{ configs.core.datas.root_path }}"

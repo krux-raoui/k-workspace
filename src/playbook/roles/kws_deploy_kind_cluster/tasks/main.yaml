@@ -28,6 +28,8 @@
       - "{{ env_name }}"
       - --config
       - ./kind-cluster.yaml.tmp
+      - --image
+      - "{{ node_image }}"
   when: "env_name not in clusters_list.stdout"
 
 - name: deleting kind-config template result

@@ -18,6 +18,7 @@
     url: "{{ configs.builder.git.gogs_values.app_url }}/install"
     follow_redirects: none
     method: GET
+    validate_certs: no
   register: ensure_gogs_ready
   until: ensure_gogs_ready.status == 200
   retries: 10
@@ -32,5 +33,6 @@
     body_format: form-urlencoded
     body: "{{ configs.builder.git.gogs_values }}"
     status_code: 302
+    validate_certs: no
   when:
     - "not gogs_app_ini_stat.stat.exists"

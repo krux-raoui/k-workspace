@@ -132,10 +132,8 @@ configs:
               paths:
                 - /
           tls:
-            []
-            # - secretName: chart-example-tls
-            #   hosts:
-            #     - ide.{{ host_dns }}
+            - hosts:
+                - ide.{{ host_dns }}
         persistence:
           enabled: true
           storageClass: "local-path"

@@ -1,8 +1,16 @@
+- name: ensure kube is present
+  shell: kubectl --context {{ configs.host.k8s.context }} get all
+  register: context_present
+  failed_when: no
+  changed_when: no
+
 - name: undeploying nginx ingress
   k8s:
     state: absent
     context: "{{  configs.host.k8s.context  }}"
     src: "{{ layer_path }}/k8s/kind-nginx-ingress.yaml"
+  when:
+    - "'kubernetes' in context_present.stdout"
 
 - name: wait for namespace for ingress-nginx deletion completed
   command:
@@ -18,3 +26,5 @@
   failed_when:
     - "not 'not found' in wait_delete.stderr"
     - "not 'condition met' in wait_delete.stdout"
+  when:
+    - "'kubernetes' in context_present.stdout"
