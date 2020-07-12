@@ -7,7 +7,7 @@
 - name: generating CA private key
   openssl_privatekey:
     path: "{{ configs.core.datas.root_path }}/certs/ca.private.key"
-    passphrase: changeme
+    passphrase: "{{ configs.core.certs.passphrase }}"
     size: 4096
     cipher: des3
     type: RSA
@@ -16,23 +16,25 @@
   openssl_csr:
     path: "{{ configs.core.datas.root_path }}/certs/ca.csr"
     privatekey_path: "{{ configs.core.datas.root_path }}/certs/ca.private.key"
-    privatekey_passphrase: changeme
-    country_name: FR
-    organization_name: "k-workspace CA {{ env_name }}"
-    email_address: admin@{{env_name}}.kws
-    common_name: "{{env_name}}.kws"
+    privatekey_passphrase: "{{ configs.core.certs.passphrase }}"
+    country_name: "{{ configs.core.certs.csr_infos.country_name }}"
+    organization_name: "{{ configs.core.certs.csr_infos.organization_name }}"
+    organizational_unit_name: "{{ configs.core.certs.csr_infos.organizational_unit_name }}"
+    state_or_province_name: "{{ configs.core.certs.csr_infos.state_or_province_name }}"
+    locality_name: "{{ configs.core.certs.csr_infos.locality_name }}"
+    email_address: "{{ configs.core.certs.csr_infos.email_address }}"
+    common_name: "k-workspace CA {{env_name}}"
 
 - name: self-sign root CA csr
   openssl_certificate:
     path: "{{ configs.core.datas.root_path }}/certs/ca.crt"
     privatekey_path: "{{ configs.core.datas.root_path }}/certs/ca.private.key"
-    privatekey_passphrase: changeme
+    privatekey_passphrase: "{{ configs.core.certs.passphrase }}"
     csr_path: "{{ configs.core.datas.root_path }}/certs/ca.csr"
     provider: selfsigned
-    selfsigned_not_after: "+350d"
+    selfsigned_not_after: "{{ configs.core.certs.expiration }}"
   register: generate_ca_certificate
 
 - name: "{{ phase }} platform layer for {{ layer }}"
   include_role:
     name: kws_phase_platform_layer
- 

@@ -2,8 +2,10 @@
   hosts: localhost
   vars:
     phase: uninstall
-
-
+  vars_prompt:
+    - name: "remove_datas_root"
+      prompt: "Are you sure to delete all your data root folder ({{ configs.core.datas.root_path }}) (yes/no)?"
+      private: no
   tasks:
     - name: "host layer"
       include_role:

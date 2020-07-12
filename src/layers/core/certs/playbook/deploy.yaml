@@ -7,10 +7,13 @@
   openssl_csr:
     path: "{{ configs.core.datas.root_path }}/certs/ssl.csr"
     privatekey_path: "{{ configs.core.datas.root_path }}/certs/ssl.private.key"
-    country_name: FR
-    organization_name: k-workspace {{ env_name }}
-    email_address: "admin@{{ host_dns }}"
-    common_name: "{{ host_dns }}"
+    country_name: "{{ configs.core.certs.csr_infos.country_name }}"
+    organization_name: "{{ configs.core.certs.csr_infos.organization_name }}"
+    organizational_unit_name: "{{ configs.core.certs.csr_infos.organizational_unit_name }}"
+    state_or_province_name: "{{ configs.core.certs.csr_infos.state_or_province_name }}"
+    locality_name: "{{ configs.core.certs.csr_infos.locality_name }}"
+    email_address: "{{ configs.core.certs.csr_infos.email_address }}"
+    common_name: "k-workspace SSL {{env_name}}.kws"
     subject_alt_name: "DNS:{{ host_dns }},DNS:*.{{ host_dns }}"
 
 - name: sign ssl certificate with CA authority
@@ -19,8 +22,8 @@
     csr_path: "{{ configs.core.datas.root_path }}/certs/ssl.csr"
     ownca_path: "{{ configs.core.datas.root_path }}/certs/ca.crt"
     ownca_privatekey_path: "{{ configs.core.datas.root_path }}/certs/ca.private.key"
-    ownca_privatekey_passphrase: changeme
-    ownca_not_after: "+350d"
+    ownca_privatekey_passphrase: "{{ configs.core.certs.passphrase }}"
+    ownca_not_after: "{{  configs.core.certs.expiration }}"
     provider: ownca
 
 - name: "{{ phase }} platform layer for {{ layer }}"

@@ -6,19 +6,19 @@ host_dns: "{{ env_name }}.kws"
 layers:
   core:
     # []
-    # - datas
-    # - docker
-    # - dns
+    - datas
+    - docker
+    - dns
     - certs
   host:
-    []
-    # - registry
-    # - k8s
-    # - ingress
+    #[]
+    - registry
+    - k8s
+    - ingress
   builder:
-    []
-    # - git
-    # - ide
+    # []
+    - git
+    - ide
 
 configs:
   core:
@@ -29,6 +29,16 @@ configs:
       use_dnsmasq: true
     docker:
       install_docker: no # set to yes if you want docker to be install for current platform (if supported)
+    certs:
+      passphrase: changeme
+      expiration: "+350d"
+      csr_infos:
+        country_name: FR
+        organization_name: "k-workspace {{ env_name }}"
+        organizational_unit_name: "{{ env_name }} local Certificate Authority"
+        state_or_province_name: Ile-de-France
+        locality_name: Paris
+        email_address: admin@{{ host_dns }}
   host:
     registry:
       port: 5000
@@ -54,7 +64,7 @@ configs:
             - host: "git.{{ host_dns }}"
               paths:
                 - /
-          tls: 
+          tls:
             - hosts:
                 - git.{{ host_dns }}
         persistence:
@@ -77,7 +87,7 @@ configs:
         domain: localhost
         ssh_port:
         http_port: 3000
-        app_url: http://git.{{ host_dns}}
+        app_url: https://git.{{ host_dns}}
         log_root_path: /data/git/log
         smtp_host:
         smtp_from:

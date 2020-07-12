@@ -1,5 +1,5 @@
 - name: remove root-ca certificate locally
-  shell: security delete-certificate -c example.kws /Library/Keychains/System.keychain
+  shell: security delete-certificate -c "k-workspace CA {{env_name}}" /Library/Keychains/System.keychain
   become: yes
   register: remove_root_ca
   failed_when:

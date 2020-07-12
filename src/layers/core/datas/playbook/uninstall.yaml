@@ -1,10 +1,8 @@
 - name: remove root datas folder
+ 
   file:
     path: "{{ configs.core.datas.root_path }}"
     state: "absent"
   when:
     - "remove_datas_root | bool"
-  vars_prompt:
-    - name: "remove_datas_root"
-      prompt: "Are you sure to delete all your data root folder ({{ configs.core.datas.root_path }}) (yes/no)?"
-      private: no
+ 
